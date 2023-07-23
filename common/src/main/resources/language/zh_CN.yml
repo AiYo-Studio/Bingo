@@ -1,0 +1,24 @@
+prefix: "&bBingo&f "
+
+help:
+  default:
+    - ""
+    - "&6Bingo"
+    - ""
+    - "&a /%c view <界面编号> &f- 查看任务面板"
+    - ""
+  admin:
+    - ""
+    - "&6Bingo"
+    - ""
+    - "&a /%c view <界面编号> &f- 查看任务面板"
+    - "&a /%c reload &f- 重载插件配置文件"
+    - ""
+
+pulling-start: "正在加载你的数据."
+pulling-completed: "数据已经加载完成."
+
+view-not-found: "未找到可视化面板."
+data-not-load: "数据还未加载完成."
+
+reload: "插件配置重载完成."

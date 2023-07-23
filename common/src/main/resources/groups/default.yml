@@ -1,0 +1,5 @@
+condition: [ ]
+unlock:
+  - "example1"
+  - "example2"
+  - "example3"

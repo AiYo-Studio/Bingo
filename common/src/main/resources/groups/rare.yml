@@ -1,0 +1,6 @@
+condition:
+  - "%bingo_total_progress_defaul% >= 100"
+unlock:
+  - "example4"
+  - "example5"
+  - "example6"

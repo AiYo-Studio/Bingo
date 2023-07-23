@@ -1,0 +1,13 @@
+name: Bingo
+main: com.aiyostudio.bingo.Bingo
+depend:
+  - AyCore
+softdepend:
+  - PlaceholderAPI
+authors:
+  - AiYo Studio
+api-version: 1.13
+version: @version@
+commands:
+  bingo:
+    description: Command for Bingo.

@@ -1,0 +1,15 @@
+example1:
+  name: "挖十个石头进阶版"
+  type: "break"
+  condition: "STONE"
+  amount: 10
+example2:
+  name: "挖十个泥土进阶版"
+  type: "break"
+  condition: "DIRT"
+  amount: 10
+example3:
+  name: "挖十个沙子进阶版"
+  type: "break"
+  condition: "SAND"
+  amount: 10

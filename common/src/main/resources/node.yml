@@ -1,0 +1,3 @@
+default: { }
+vip:
+  permission: "bingo.node.vip"

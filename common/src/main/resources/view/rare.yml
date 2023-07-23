@@ -1,0 +1,62 @@
+title: "&8Rare"
+size: 54
+
+require-quests: &requreQuests [ "quest4", "quest5", "quest6" ]
+
+# YAML 语法, 非插件特殊语法
+repeat-quest-item: &questItem
+  amount: 1
+  data: 0
+  # customModel: 0
+  name: "&f%questName%"
+  lore: [ ]
+repeat-state-item: &stateItem
+  state:
+    - type: STAINED_GLASS_PANE
+      amount: 1
+      data: 14
+      name: "&a已领取"
+      lore: [ ]
+    - type: STAINED_GLASS_PANE
+      amount: 1
+      data: 14
+      name: "&e待领取"
+      lore: [ ]
+    - type: STAINED_GLASS_PANE
+      amount: 1
+      data: 14
+      name: "&c未完成"
+      lore: [ ]
+
+quest-item:
+  - type: STONE
+    <<: *questItem
+    slot: 13
+    quest: "quest4"
+  - type: STAINED_GLASS_PANE
+    <<: *questItem
+    slot: 14
+    quest: "quest5"
+  - type: STAINED_GLASS_PANE
+    <<: *questItem
+    slot: 15
+    quest: "quest6"
+
+state-item:
+  1:
+    slot: 12
+    quests: *requreQuests
+    <<: *stateItem
+  2:
+    slot: 16
+    quests: *requreQuests
+    <<: *stateItem
+
+items:
+  fg:
+    type: STAINED_GLASS_PANE
+    amount: 1
+    data: 15
+    name: "&f"
+    lore: [ ]
+    slot: 0-10,17-26

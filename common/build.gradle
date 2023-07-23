@@ -1,0 +1,7 @@
+dependencies {
+    implementation("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
+    implementation("org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT")
+    implementation("org.bukkit:bukkit:1.16.5-R0.1-SNAPSHOT")
+
+    implementation "com.aystudio.core:AyCore:1.0.3-BETA"
+}

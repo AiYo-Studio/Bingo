@@ -1,0 +1,24 @@
+example1:
+  name: "挖十个石头"
+  type: "break"
+  condition: "STONE"
+  amount: 10
+  commands:
+    default: [ "say %player_name% hahahaha." ]
+    vip: [ "say %player_name% hahahaha VIP." ]
+example2:
+  name: "挖十个泥土"
+  type: "break"
+  condition: "DIRT"
+  amount: 10
+  commands:
+    default: [ "say %player_name% hahahaha." ]
+    vip: [ "say %player_name% hahahaha VIP." ]
+example3:
+  name: "挖十个沙子"
+  type: "break"
+  condition: "SAND"
+  amount: 10
+  commands:
+    default: [ "say %player_name% hahahaha." ]
+    vip: [ "say %player_name% hahahaha VIP." ]

@@ -1,0 +1,76 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '4.0.2'
+}
+
+project.ext {
+    ver = "1.0.0-SNAPSHOT"
+}
+
+dependencies {
+    implementation project(":common")
+    implementation project(":module:module-pixelmon-legacy")
+    implementation project(":module:module-pixelmon-native")
+}
+
+allprojects {
+    apply plugin: 'java'
+
+    archivesBaseName = "Bingo"
+    version = ""
+
+    sourceCompatibility = targetCompatibility = '1.8'
+    compileJava {
+        sourceCompatibility = targetCompatibility = '1.8'
+    }
+
+    repositories {
+        maven {
+            name = "AyStudio-Repository"
+            url = "https://repo.mc9y.com/snapshots"
+        }
+    }
+
+    dependencies {
+        // lombok
+        compileOnly("org.projectlombok:lombok:1.18.24")
+        annotationProcessor("org.projectlombok:lombok:1.18.24")
+    }
+
+    processResources {
+        from(sourceSets.main.resources.srcDirs) {
+            include '**/*.yml'
+            filter ReplaceTokens, tokens: ["version": project.property("ver")]
+            duplicatesStrategy DuplicatesStrategy.INCLUDE
+        }
+    }
+
+    processResources {
+        setFilteringCharset("UTF-8")
+        expand project.properties
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    jar {
+        baseName = "Bingo"
+    }
+}
+
+shadowJar {
+    classifier = ''
+    baseName = 'Bingo'
+    version = project.property("ver")
+
+    configurations = [project.configurations.runtimeClasspath]
+
+    dependencies {
+        include project(":common") as Spec
+        include project(":module:module-pixelmon-legacy") as Spec
+        include project(":module:module-pixelmon-native") as Spec
+    }
+}

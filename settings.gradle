@@ -1,0 +1,4 @@
+rootProject.name = "Bingo"
+
+include 'common'
+include 'module:module-pixelmon-legacy', 'module:module-pixelmon-native'
