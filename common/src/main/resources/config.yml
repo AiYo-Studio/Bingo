@@ -14,3 +14,9 @@ data-option:
   time-out: 120
   # 同步提示
   pull-notify: true
+# 任务进度条
+progress:
+  text: "::::::::::::::::::::"
+  length: 20
+  complete: "&a"
+  undone: "&c"

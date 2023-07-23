@@ -1,25 +1,28 @@
 title: "&8Rare"
-size: 54
+size: 27
 
-require-quests: &requreQuests [ "quest4", "quest5", "quest6" ]
+# requreQuests, repeat-quest-item 和 repeat-state-item 并非插件配置, 而是 YAML 语法, 只是方便利用重复的设定
+require-quests: &requreQuests [ "example4", "example5", "example6" ]
 
-# YAML 语法, 非插件特殊语法
 repeat-quest-item: &questItem
   amount: 1
   data: 0
   # customModel: 0
   name: "&f%questName%"
-  lore: [ ]
+  lore:
+    - ""
+    - " &f当前进度 %progress% &f(%pct%%) "
+    - ""
 repeat-state-item: &stateItem
   state:
     - type: STAINED_GLASS_PANE
       amount: 1
-      data: 14
+      data: 13
       name: "&a已领取"
       lore: [ ]
     - type: STAINED_GLASS_PANE
       amount: 1
-      data: 14
+      data: 4
       name: "&e待领取"
       lore: [ ]
     - type: STAINED_GLASS_PANE
@@ -32,31 +35,28 @@ quest-item:
   - type: STONE
     <<: *questItem
     slot: 13
-    quest: "quest4"
-  - type: STAINED_GLASS_PANE
+    quest: "example4"
+  - type: DIRT
     <<: *questItem
     slot: 14
-    quest: "quest5"
-  - type: STAINED_GLASS_PANE
+    quest: "example5"
+  - type: SAND
     <<: *questItem
     slot: 15
-    quest: "quest6"
+    quest: "example6"
 
 state-item:
-  1:
-    slot: 12
+  - slot: 12
     quests: *requreQuests
     <<: *stateItem
-  2:
-    slot: 16
+  - slot: 16
     quests: *requreQuests
     <<: *stateItem
 
 items:
-  fg:
-    type: STAINED_GLASS_PANE
+  - type: STAINED_GLASS_PANE
     amount: 1
     data: 15
     name: "&f"
     lore: [ ]
-    slot: 0-10,17-26
+    slot: 0-9,17-26

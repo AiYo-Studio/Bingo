@@ -4,4 +4,8 @@ dependencies {
     implementation("org.bukkit:bukkit:1.16.5-R0.1-SNAPSHOT")
 
     implementation "com.aystudio.core:AyCore:1.0.3-BETA"
+    // NBTItem
+    implementation("de.tr7zw:item-nbt-api-plugin:2.11.2")
+    // PlaceholderAPI
+    implementation('me.clip:placeholderapi:2.10.4')
 }

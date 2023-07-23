@@ -2,6 +2,7 @@ name: Bingo
 main: com.aiyostudio.bingo.Bingo
 depend:
   - AyCore
+  - NBTAPI
 softdepend:
   - PlaceholderAPI
 authors:

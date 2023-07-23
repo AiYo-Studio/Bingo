@@ -59,7 +59,7 @@ public class BingoCommand implements CommandExecutor {
 
     private void reload(CommandSender sender) {
         if (sender.hasPermission("bingo.admin")) {
-            this.plugin.reloadConfig();
+            this.plugin.loadConfig();
             sender.sendMessage(I18n.getStrAndHeader("reload"));
         }
     }

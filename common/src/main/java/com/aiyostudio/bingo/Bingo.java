@@ -7,9 +7,13 @@ import com.aiyostudio.bingo.config.DataSourceConfig;
 import com.aiyostudio.bingo.config.DefaultConfig;
 import com.aiyostudio.bingo.dao.AbstractDataSourceImpl;
 import com.aiyostudio.bingo.dao.IDataSource;
+import com.aiyostudio.bingo.hook.placeholders.PlaceholderHook;
 import com.aiyostudio.bingo.i18n.I18n;
+import com.aiyostudio.bingo.listen.BingoListener;
 import com.aiyostudio.bingo.listen.PlayerListener;
+import com.aiyostudio.bingo.listen.QuestTriggerListener;
 import com.aiyostudio.bingo.service.IModelService;
+import com.aiyostudio.bingo.task.UnlockGroupTask;
 import com.aystudio.core.bukkit.plugin.AyPlugin;
 import org.bukkit.Bukkit;
 
@@ -29,6 +33,8 @@ public class Bingo extends AyPlugin {
         this.initializeDataSource();
         this.initializeHandler();
         this.initializeServices();
+        this.registerHookPlugins();
+        this.runTasks();
     }
 
     public void loadConfig() {
@@ -49,12 +55,25 @@ public class Bingo extends AyPlugin {
 
     private void initializeHandler() {
         this.getCommand("bingo").setExecutor(new BingoCommand());
+
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+        Bukkit.getPluginManager().registerEvents(new QuestTriggerListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BingoListener(), this);
     }
 
     private void initializeServices() {
         ServiceLoader<IModelService> serviceLoader = ServiceLoader.load(IModelService.class);
         serviceLoader.forEach(IModelService::run);
+    }
+
+    private void registerHookPlugins() {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceholderHook().register();
+        }
+    }
+
+    private void runTasks() {
+        Bukkit.getScheduler().runTaskTimer(this, new UnlockGroupTask(), 60L, 60L);
     }
 
     public static Bingo getInstance() {

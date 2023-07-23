@@ -3,6 +3,7 @@ package com.aiyostudio.bingo.cacheframework.manager;
 import com.aiyostudio.bingo.Bingo;
 import com.aiyostudio.bingo.cacheframework.cache.*;
 import com.aiyostudio.bingo.dao.IDataSource;
+import com.aiyostudio.bingo.util.TextUtil;
 import com.aystudio.core.bukkit.interfaces.CustomExecute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -36,6 +37,8 @@ public class CacheManager {
     public static void initialize() {
         CacheManager.loadQuestCache();
         CacheManager.loadViewCache();
+        CacheManager.loadGroupCache();
+        CacheManager.loadNodeCache();
     }
 
     private static void loadQuestCache() {
@@ -43,8 +46,8 @@ public class CacheManager {
 
         File questFolder = new File(Bingo.getInstance().getDataFolder(), "quests");
         if (!questFolder.exists()) {
-            questFolder.mkdir();
             Bingo.getInstance().saveResource("quests/default.yml", "quests/default.yml");
+            Bingo.getInstance().saveResource("quests/rare.yml", "quests/rare.yml");
         }
         CacheManager.loadQuestCache(questFolder);
     }
@@ -85,7 +88,8 @@ public class CacheManager {
         for (File file : groupFolder.listFiles()) {
             String name = file.getName().substring(0, file.getName().indexOf(".yml"));
             FileConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-            GroupCache groupCache = new GroupCache(yaml.getStringList("condition"), yaml.getStringList("unlock"));
+            GroupCache groupCache = new GroupCache(yaml.getStringList("condition"),
+                    yaml.getStringList("unlock"), TextUtil.formatHexColor(yaml.getString("name")));
             CacheManager.GROUP_CACHE_MAP.put(name, groupCache);
         }
     }
@@ -153,11 +157,19 @@ public class CacheManager {
         return CacheManager.GROUP_CACHE_MAP.getOrDefault(groupId, null);
     }
 
+    public static Map<String, GroupCache> getAllGroup() {
+        return CacheManager.GROUP_CACHE_MAP;
+    }
+
     public static boolean hasNodeCache(String nodeId) {
         return CacheManager.NODE_CACHE_MAP.containsKey(nodeId);
     }
 
     public static NodeCache getNodeCache(String nodeId) {
         return CacheManager.NODE_CACHE_MAP.getOrDefault(nodeId, null);
+    }
+
+    public static Map<String, NodeCache> getAllNodes() {
+        return CacheManager.NODE_CACHE_MAP;
     }
 }

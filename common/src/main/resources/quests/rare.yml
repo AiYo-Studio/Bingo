@@ -1,15 +1,24 @@
-example1:
+example4:
   name: "挖十个石头进阶版"
   type: "break"
   condition: "STONE"
   amount: 10
-example2:
+  commands:
+    default: [ "say %player_name% hahahaha." ]
+    vip: [ "say %player_name% hahahaha VIP." ]
+example5:
   name: "挖十个泥土进阶版"
   type: "break"
   condition: "DIRT"
   amount: 10
-example3:
+  commands:
+    default: [ "say %player_name% hahahaha." ]
+    vip: [ "say %player_name% hahahaha VIP." ]
+example6:
   name: "挖十个沙子进阶版"
   type: "break"
   condition: "SAND"
   amount: 10
+  commands:
+    default: [ "say %player_name% hahahaha." ]
+    vip: [ "say %player_name% hahahaha VIP." ]

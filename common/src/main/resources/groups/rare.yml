@@ -1,5 +1,6 @@
+name: "&aRare"
 condition:
-  - "%bingo_total_progress_defaul% >= 100"
+  - "%bingo_group_progress_default% >= 100"
 unlock:
   - "example4"
   - "example5"

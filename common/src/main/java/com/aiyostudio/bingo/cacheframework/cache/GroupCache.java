@@ -13,4 +13,5 @@ import java.util.List;
 @AllArgsConstructor
 public class GroupCache {
     private final List<String> conditionList, unlockList;
+    private final String name;
 }

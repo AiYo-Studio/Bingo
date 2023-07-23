@@ -21,4 +21,7 @@ pulling-completed: "数据已经加载完成."
 view-not-found: "未找到可视化面板."
 data-not-load: "数据还未加载完成."
 
+quest-complete: "成功完成任务 &a%questName%"
+unlock-group: "成功解锁新的任务组 &a%groupName%"
+
 reload: "插件配置重载完成."
