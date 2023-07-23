@@ -27,6 +27,9 @@ allprojects {
     }
 
     repositories {
+        jcenter()
+        mavenCentral()
+        maven { url = "https://files.minecraftforge.net/maven" }
         maven {
             name = "AyStudio-Repository"
             url = "https://repo.mc9y.com/snapshots"
@@ -34,7 +37,6 @@ allprojects {
     }
 
     dependencies {
-        // lombok
         compileOnly("org.projectlombok:lombok:1.18.24")
         annotationProcessor("org.projectlombok:lombok:1.18.24")
     }
@@ -55,22 +57,22 @@ allprojects {
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"
     }
+}
 
-    jar {
-        baseName = "Bingo"
+subprojects.each { subproject -> evaluationDependsOn(subproject.path) }
+
+tasks.register('allJar', Jar) {
+    dependsOn subprojects.tasks["build"]
+    baseName = 'Bingo-' + project.property("ver")
+    subprojects.each { subproject ->
+        from subproject.configurations.archives.allArtifacts.files.collect {
+            zipTree(it)
+        }
     }
 }
 
-shadowJar {
-    classifier = ''
-    baseName = 'Bingo'
-    version = project.property("ver")
+tasks.jar.enabled = false
 
-    configurations = [project.configurations.runtimeClasspath]
-
-    dependencies {
-        include project(":common") as Spec
-        include project(":module:module-pixelmon-legacy") as Spec
-        include project(":module:module-pixelmon-native") as Spec
-    }
+artifacts {
+    archives allJar
 }

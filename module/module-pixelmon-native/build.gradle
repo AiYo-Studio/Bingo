@@ -1,3 +1,28 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url = "https://files.minecraftforge.net/maven" }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+
+minecraft {
+    mappings channel: 'official', version: '1.16.5'
+}
+
 dependencies {
     implementation project(':common')
+
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.39'
+
+    implementation("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
+    implementation("org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT")
+    implementation("org.bukkit:bukkit:1.16.5-R0.1-SNAPSHOT")
+
+    implementation fileTree(dir: './libs', includes: ['*.jar'])
 }
