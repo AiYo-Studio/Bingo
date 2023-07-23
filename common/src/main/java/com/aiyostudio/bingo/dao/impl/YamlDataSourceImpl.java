@@ -31,7 +31,7 @@ public class YamlDataSourceImpl extends AbstractDataSourceImpl {
     }
 
     @Override
-    public void save(PlayerCache playerCache) {
+    public void save(PlayerCache playerCache, int locked) {
         File file = new File(Bingo.getInstance().getDataFolder(), "playerData");
         if (!file.exists()) {
             file.mkdir();

@@ -2,6 +2,7 @@ package com.aiyostudio.bingo.dao;
 
 import com.aiyostudio.bingo.config.DataSourceConfig;
 import com.aiyostudio.bingo.dao.impl.MysqlDataSourceImpl;
+import com.aiyostudio.bingo.dao.impl.SQLiteDataSourceImpl;
 import com.aiyostudio.bingo.dao.impl.YamlDataSourceImpl;
 import com.aiyostudio.bingo.enums.DataSourceType;
 import lombok.Getter;
@@ -26,6 +27,9 @@ public abstract class AbstractDataSourceImpl implements IDataSource {
     public static IDataSource of(DataSourceConfig config) {
         IDataSource dataSource = null;
         switch (config.getType().toLowerCase()) {
+            case "sqlite":
+                dataSource = new SQLiteDataSourceImpl(config);
+                break;
             case "mysql":
                 dataSource = new MysqlDataSourceImpl(config);
                 break;

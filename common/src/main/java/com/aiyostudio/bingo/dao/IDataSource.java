@@ -23,7 +23,7 @@ public interface IDataSource {
      *
      * @param playerCache player cache.
      */
-    void save(PlayerCache playerCache);
+    void save(PlayerCache playerCache, int locked);
 
     boolean isLocked(UUID uniqueId);
 
