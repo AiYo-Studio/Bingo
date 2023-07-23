@@ -121,7 +121,7 @@ public class CacheManager {
     public static void unloadCache(UUID uuid) {
         PlayerCache playerCache = CacheManager.PLAYER_CACHE_MAP.remove(uuid);
         if (playerCache != null) {
-            dataSource.save(playerCache);
+            dataSource.save(playerCache, 0);
         }
     }
 

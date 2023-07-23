@@ -4,7 +4,7 @@ language: zh_CN
 data-option:
   # 存储类型, 支持: MySQL, SQLite, YAML
   type: YAML
-  # SQL url, 例如jdbc:mysql://127.0.0.1/minecraft 格式: jdbc:mysql://MySQL地址/数据库名
+  # MySQL url, 例如 jdbc:mysql://127.0.0.1/minecraft 格式: jdbc:mysql://MySQL地址/数据库名
   url: jdbc:mysql://localhost/minecraft?useSSL=false
   # 数据库用户名
   user: "root"

@@ -29,12 +29,22 @@ public class Bingo extends AyPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        this.getConsoleLogger().setPrefix("&f[&bBingo&f] ");
+        this.getConsoleLogger().log(false, " ");
+        this.getConsoleLogger().log(false, "&6   Bingo (AiYo Studio) &av" + this.getDescription().getVersion());
+        this.getConsoleLogger().log(false, " ");
+        this.getConsoleLogger().log(false, "&b  * &f载入模块列表");
+        // initialize pluign
         this.loadConfig();
         this.initializeDataSource();
         this.initializeHandler();
+
+        this.getConsoleLogger().log(false, "&e    + &f原版模块: &aON");
         this.initializeServices();
         this.registerHookPlugins();
         this.runTasks();
+
+        this.getConsoleLogger().log(false, " ");
     }
 
     public void loadConfig() {
@@ -62,6 +72,7 @@ public class Bingo extends AyPlugin {
     }
 
     private void initializeServices() {
+        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
         ServiceLoader<IModelService> serviceLoader = ServiceLoader.load(IModelService.class);
         serviceLoader.forEach(IModelService::run);
     }

@@ -25,8 +25,14 @@ public class PlayerCache {
     private final List<String> claimed = new ArrayList<>(), unlockGroup = new ArrayList<>(),
             receivedSegmentRewards = new ArrayList<>();
     private final Map<String, QuestProgressCache> progress = new HashMap<>();
+    @Getter
+    @Setter
+    private boolean newData;
 
     public PlayerCache(UUID uuid, FileConfiguration data) {
+        if (data.contains("new")) {
+            this.newData = true;
+        }
         this.uniqueId = uuid;
         this.claimed.addAll(data.getStringList("claimed"));
         if (data.contains("progress")) {
