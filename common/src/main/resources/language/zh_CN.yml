@@ -21,6 +21,12 @@ pulling-completed: "数据已经加载完成."
 view-not-found: "未找到可视化面板."
 data-not-load: "数据还未加载完成."
 
+reward-received: "该奖励你已领过."
+gotten-reward: "成功领取奖励."
+
+quest-undone: "你还未完成对应的任务."
+
+view-locked: "还未解锁该视图所有任务, 无法查看."
 quest-complete: "成功完成任务 &a%questName%"
 unlock-group: "成功解锁新的任务组 &a%groupName%"
 

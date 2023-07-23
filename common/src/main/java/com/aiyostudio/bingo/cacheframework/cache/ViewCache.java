@@ -19,10 +19,11 @@ public class ViewCache {
     private final List<FileConfiguration> questItems = new ArrayList<>(),
             displayItems = new ArrayList<>(),
             stateItems = new ArrayList<>();
-    private final String viewTitle;
+    private final String viewTitle, viewId;
     private final int viewSize;
 
-    public ViewCache(FileConfiguration data) {
+    public ViewCache(String viewId, FileConfiguration data) {
+        this.viewId = viewId;
         this.viewTitle = TextUtil.formatHexColor(data.getString("title"));
         this.viewSize = data.getInt("size");
         this.requreQuests.addAll(data.getStringList("require-quests"));

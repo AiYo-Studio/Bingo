@@ -7,11 +7,13 @@ import com.aiyostudio.bingo.cacheframework.cache.ViewCache;
 import com.aiyostudio.bingo.cacheframework.manager.CacheManager;
 import com.aiyostudio.bingo.config.DefaultConfig;
 import com.aiyostudio.bingo.hook.placeholders.PlaceholderHook;
+import com.aiyostudio.bingo.i18n.I18n;
 import com.aiyostudio.bingo.util.TextUtil;
 import com.aystudio.core.bukkit.util.common.CommonUtil;
 import com.aystudio.core.bukkit.util.inventory.GuiModel;
 import de.tr7zw.nbtapi.NBTItem;
 import de.tr7zw.nbtapi.utils.MinecraftVersion;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -23,6 +25,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,20 +37,64 @@ import java.util.Map;
 public class BingoView {
 
     public static void open(Player player, ViewCache viewCache) {
+        if (viewCache == null) {
+            return;
+        }
         PlayerCache playerCache = CacheManager.getPlayerCache(player.getUniqueId());
-
+        if (viewCache.getRequreQuests().stream().anyMatch(s -> !playerCache.hasQuest(s))) {
+            player.sendMessage(I18n.getStrAndHeader("view-locked"));
+            return;
+        }
         GuiModel model = new GuiModel(viewCache.getViewTitle(), viewCache.getViewSize());
         model.registerListener(Bingo.getInstance());
         model.setCloseRemove(true);
 
         BingoView.initializeDisplayItem(player, model, viewCache);
         BingoView.initializeQuestItem(player, model, playerCache, viewCache);
-        BingoView.initializeStateItem(player, model, playerCache, viewCache);
+
+        Map<String, List<String>[]> map = BingoView.initializeStateItem(player, model, playerCache, viewCache);
 
         model.execute((e) -> {
             e.setCancelled(true);
             if (e.getClickedInventory() == e.getInventory()) {
+                ItemStack itemStack = e.getCurrentItem();
+                if (itemStack == null || itemStack.getType() == Material.AIR) {
+                    return;
+                }
+                Player clicker = (Player) e.getWhoClicked();
+                NBTItem nbtItem = new NBTItem(itemStack);
+                if (nbtItem.hasTag("BingoView")) {
+                    String viewId = nbtItem.getString("BingoView");
+                    if (viewId.equals(viewCache.getViewId())) {
+                        return;
+                    }
+                    BingoView.open(clicker, CacheManager.getViewCache(viewId));
+                } else if (nbtItem.hasTag("BingoQuestReward")) {
+                    String rewardId = nbtItem.getString("BingoQuestReward");
+                    if (!map.containsKey(rewardId)) {
+                        return;
+                    }
+                    List<String>[] array = map.get(rewardId);
+                    PlayerCache tempPlayerCache = CacheManager.getPlayerCache(player.getUniqueId());
+                    if (tempPlayerCache.isReceived(rewardId)) {
+                        clicker.sendMessage(I18n.getStrAndHeader("reward-received"));
+                        return;
+                    }
+                    if (array[0].stream().allMatch(tempPlayerCache::isCompleted)) {
+                        tempPlayerCache.addReceivedRewardKey(rewardId);
 
+                        array[1].forEach((command) -> {
+                            String last = PlaceholderHook.format(clicker, command);
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), last.replace("%player%", clicker.getName()));
+                        });
+
+                        clicker.sendMessage(I18n.getStrAndHeader("gotten-reward"));
+
+                        BingoView.open(clicker, viewCache);
+                    } else {
+                        clicker.sendMessage(I18n.getStrAndHeader("quest-undone"));
+                    }
+                }
             }
         });
         model.openInventory(player);
@@ -131,12 +178,15 @@ public class BingoView {
         });
     }
 
-    private static void initializeStateItem(Player target, GuiModel model, PlayerCache playerCache, ViewCache viewCache) {
+    private static Map<String, List<String>[]> initializeStateItem(Player target, GuiModel model, PlayerCache playerCache, ViewCache viewCache) {
+        Map<String, List<String>[]> result = new HashMap<>();
         viewCache.getStateItems().forEach(s -> {
+            String claimKey = s.getString("claimKey");
             String[] quests = s.getStringList("quests").toArray(new String[0]);
+
             int stateIndex = 2;
             if (playerCache.isCompleted(quests)) {
-                stateIndex = playerCache.isClaimed(s.getString("claimKey")) ? 0 : 1;
+                stateIndex = playerCache.isReceived(claimKey) ? 0 : 1;
             }
             Map<String, Object> map = (Map<String, Object>) s.getList("state").get(stateIndex);
             FileConfiguration config = new YamlConfiguration();
@@ -162,12 +212,16 @@ public class BingoView {
             itemStack.setItemMeta(itemMeta);
 
             NBTItem nbtItem = new NBTItem(itemStack);
-            nbtItem.setString("BingoQuestReward", s.getString("claimKey"));
+            nbtItem.setString("BingoQuestReward", claimKey);
             itemStack = nbtItem.getItem();
 
             for (int slot : CommonUtil.formatSlots(s.getString("slot"))) {
                 model.setItem(slot, itemStack);
             }
+
+            List<String>[] array = new List[]{s.getStringList("quests"), s.getStringList("commands")};
+            result.put(claimKey, array);
         });
+        return result;
     }
 }

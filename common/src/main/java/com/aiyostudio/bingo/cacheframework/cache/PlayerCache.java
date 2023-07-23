@@ -22,7 +22,8 @@ import java.util.*;
  */
 public class PlayerCache {
     private final UUID uniqueId;
-    private final List<String> claimed = new ArrayList<>(), unlockGroup = new ArrayList<>();
+    private final List<String> claimed = new ArrayList<>(), unlockGroup = new ArrayList<>(),
+            receivedSegmentRewards = new ArrayList<>();
     private final Map<String, QuestProgressCache> progress = new HashMap<>();
 
     public PlayerCache(UUID uuid, FileConfiguration data) {
@@ -35,6 +36,19 @@ public class PlayerCache {
             }
         }
         this.unlockGroup.addAll(data.getStringList("unlockGroup"));
+        this.receivedSegmentRewards.addAll(data.getStringList("receivedSegmentRewards"));
+    }
+
+    public boolean isReceived(String segmentRewardId) {
+        return this.receivedSegmentRewards.contains(segmentRewardId);
+    }
+
+    public void addReceivedRewardKey(String segmentRewardId) {
+        this.receivedSegmentRewards.add(segmentRewardId);
+    }
+
+    public boolean hasQuest(String questId) {
+        return this.progress.containsKey(questId);
     }
 
     public boolean hasGroup(String groupId) {
@@ -129,6 +143,7 @@ public class PlayerCache {
         FileConfiguration data = new YamlConfiguration();
         data.set("claimed", this.claimed);
         data.set("unlockGroup", this.unlockGroup);
+        data.set("receivedSegmentRewards", this.receivedSegmentRewards);
         ConfigurationSection section = new YamlConfiguration();
         progress.forEach((k, v) -> section.set(k, v.toSection()));
         data.set("progress", section);

@@ -62,7 +62,7 @@ public class CacheManager {
         }
         for (File file : viewFolder.listFiles()) {
             String name = file.getName().substring(0, file.getName().indexOf(".yml"));
-            CacheManager.VIEW_CACHE_MAP.put(name, new ViewCache(YamlConfiguration.loadConfiguration(file)));
+            CacheManager.VIEW_CACHE_MAP.put(name, new ViewCache(name, YamlConfiguration.loadConfiguration(file)));
         }
     }
 

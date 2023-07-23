@@ -1,9 +1,9 @@
 title: "&8Common"
 size: 27
 
-# requreQuests, repeat-quest-item 和 repeat-state-item 并非插件配置, 而是 YAML 语法, 只是方便利用重复的设定
 require-quests: &requreQuests [ "example1", "example2", "example3" ]
 
+# repeat-quest-item 和 repeat-state-item 并非插件配置, 而是 YAML 语法, 只是方便利用重复的设定
 repeat-quest-item: &questItem
   amount: 1
   data: 0
@@ -14,6 +14,8 @@ repeat-quest-item: &questItem
     - " &f当前进度 %progress% &f(%pct%%) "
     - ""
 repeat-state-item: &stateItem
+  commands:
+    - "say hahahahaha."
   state:
     - type: STAINED_GLASS_PANE
       amount: 1
@@ -60,5 +62,23 @@ items:
     amount: 1
     data: 15
     name: "&f"
-    lore: [ ]
+    lore: []
     slot: 0-9,17-26
+  - type: IRON_INGOT
+    amount: 1
+    data: 0
+    name: "&c▶ &aCommon"
+    lore:
+      - ""
+      - "&e点击查看"
+    slot: 10
+    view: "default"
+  - type: GOLD_INGOT
+    amount: 1
+    data: 0
+    name: "&7Rare"
+    lore:
+      - ""
+      - "&e点击查看"
+    slot: 11
+    view: "rare"
