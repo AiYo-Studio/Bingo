@@ -10,7 +10,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.Base64;

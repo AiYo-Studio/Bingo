@@ -1,46 +1,33 @@
 package com.aiyostudio.bingo.model.pixelmon.nat.listen;
 
 import com.aiyostudio.bingo.Bingo;
-import com.aiyostudio.bingo.api.interfaces.EventExecutor;
-import com.aiyostudio.bingo.model.pixelmon.nat.listen.container.ForgeEventExecutorContainer;
-import com.aystudio.core.forge.ForgeInject;
-import com.aystudio.core.forge.IForgeListenHandler;
-import net.minecraftforge.eventbus.api.Event;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import com.aiyostudio.bingo.model.pixelmon.nat.listen.container.EventConsumerContainer;
+import com.pixelmonmod.pixelmon.Pixelmon;
+import net.minecraftforge.eventbus.api.EventPriority;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author AiYo Studio
  * @since 1.0.0 - Blank038 - 2023-07-23
  */
-public class ForgeListener implements Listener {
-    private final Map<Object, EventExecutor> eventExecutorMap = new HashMap<>();
+public class ForgeListener {
 
-    public ForgeListener() {
-        ForgeInject.getInstance().getForgeListener().registerListener(Bingo.getInstance(), this, EventPriority.NORMAL);
+    public static void init() {
         try {
-            Class<ForgeEventExecutorContainer> c = ForgeEventExecutorContainer.class;
+            Class<EventConsumerContainer> c = EventConsumerContainer.class;
             for (Field field : c.getFields()) {
                 Type t = field.getGenericType();
                 if (t instanceof ParameterizedType) {
-                    eventExecutorMap.put(((ParameterizedType) t).getActualTypeArguments()[0], (EventExecutor) field.get(null));
+                    Pixelmon.EVENT_BUS.addListener(EventPriority.HIGHEST, false,
+                            (Class) ((ParameterizedType) t).getActualTypeArguments()[0], (Consumer) field.get(null));
                 }
             }
         } catch (IllegalAccessException e) {
             Bingo.getInstance().getLogger().severe(e.toString());
-        }
-    }
-
-    @IForgeListenHandler.SubscribeEvent
-    public void onForge(Event event) {
-        if (this.eventExecutorMap.containsKey(event.getClass())) {
-            this.eventExecutorMap.get(event.getClass()).run(event);
         }
     }
 }
