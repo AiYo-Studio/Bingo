@@ -17,7 +17,8 @@ import com.aiyostudio.bingo.task.UnlockGroupTask;
 import com.aystudio.core.bukkit.plugin.AyPlugin;
 import org.bukkit.Bukkit;
 
-import java.util.ServiceLoader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * @author AiYo Studio
@@ -72,9 +73,20 @@ public class Bingo extends AyPlugin {
     }
 
     private void initializeServices() {
-        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-        ServiceLoader<IModelService> serviceLoader = ServiceLoader.load(IModelService.class);
-        serviceLoader.forEach(IModelService::run);
+        String[] services = {
+                "com.aiyostudio.bingo.model.pixelmon.legacy.PixelmonLegacyModelServiceImpl",
+                "com.aiyostudio.bingo.model.pixelmon.nat.PixelmonNativeModelServiceImpl"
+        };
+        for (String serviceClassURI : services) {
+            try {
+                Class<? extends IModelService> c = (Class<? extends IModelService>) Class.forName(serviceClassURI);
+                Method method = c.getMethod("run");
+                method.invoke(c.newInstance());
+            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |
+                     InvocationTargetException e) {
+                this.getLogger().severe(e.toString());
+            }
+        }
     }
 
     private void registerHookPlugins() {
