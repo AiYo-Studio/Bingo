@@ -2,6 +2,10 @@ buildscript {
     repositories {
         jcenter()
         maven { url = "https://files.minecraftforge.net/maven" }
+        maven {
+            name = "AyStudio-Repository"
+            url = "https://repo.mc9y.com/snapshots"
+        }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
