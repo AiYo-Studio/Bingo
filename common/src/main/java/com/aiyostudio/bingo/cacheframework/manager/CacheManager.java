@@ -5,6 +5,7 @@ import com.aiyostudio.bingo.cacheframework.cache.*;
 import com.aiyostudio.bingo.dao.IDataSource;
 import com.aiyostudio.bingo.util.TextUtil;
 import com.aystudio.core.bukkit.interfaces.CustomExecute;
+import de.tr7zw.nbtapi.utils.MinecraftVersion;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -57,8 +58,13 @@ public class CacheManager {
 
         File viewFolder = new File(Bingo.getInstance().getDataFolder(), "view");
         if (!viewFolder.exists()) {
-            Bingo.getInstance().saveResource("view/default.yml", "view/default.yml");
-            Bingo.getInstance().saveResource("view/rare.yml", "view/rare.yml");
+            if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
+                Bingo.getInstance().saveResource("view/default.yml", "view/default.yml");
+                Bingo.getInstance().saveResource("view/rare.yml", "view/rare.yml");
+            } else {
+                Bingo.getInstance().saveResource("view/legacy/default.yml", "view/default.yml");
+                Bingo.getInstance().saveResource("view/legacy/rare.yml", "view/rare.yml");
+            }
         }
         for (File file : viewFolder.listFiles()) {
             String name = file.getName().substring(0, file.getName().indexOf(".yml"));
