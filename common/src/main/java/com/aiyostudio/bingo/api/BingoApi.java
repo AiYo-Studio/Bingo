@@ -1,5 +1,6 @@
 package com.aiyostudio.bingo.api;
 
+import com.aiyostudio.bingo.Bingo;
 import com.aiyostudio.bingo.cacheframework.cache.QuestCache;
 import com.aiyostudio.bingo.cacheframework.manager.CacheManager;
 import org.bukkit.entity.Player;
@@ -29,6 +30,10 @@ public class BingoApi {
     }
 
     public static void submit(Player target, String questType, String condition, int amount) {
+        if (Bingo.getInstance().getConfig().getBoolean("quest-trigger-log")) {
+            Bingo.getInstance().getLogger().info(String.format("Player: %s, QuestType: %s, Condition: %s, Amount: %s",
+                    target.getName(), questType, condition, amount));
+        }
         if (target != null && CacheManager.hasPlayerCache(target.getUniqueId())) {
             CacheManager.getPlayerCache(target.getUniqueId()).addQuestProgress(questType, condition, amount);
         }

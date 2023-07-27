@@ -20,3 +20,5 @@ progress:
   length: 20
   complete: "&a"
   undone: "&c"
+# 是否开启任务触发输出
+quest-trigger-log: false
