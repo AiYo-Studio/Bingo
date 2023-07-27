@@ -43,6 +43,14 @@ public class PlayerCache {
         }
         this.unlockGroup.addAll(data.getStringList("unlockGroup"));
         this.receivedSegmentRewards.addAll(data.getStringList("receivedSegmentRewards"));
+
+        this.unlockGroup.forEach(s -> {
+            if (CacheManager.hasGroupCache(s)) {
+                CacheManager.getGroupCache(s).getUnlockList().stream()
+                        .filter(v -> !progress.containsKey(v))
+                        .forEach(this::createQuestProgress);
+            }
+        });
     }
 
     public boolean isReceived(String segmentRewardId) {
