@@ -1,0 +1,84 @@
+title: "&8Common"
+size: 27
+
+require-quests: &requreQuests [ "example1", "example2", "example3" ]
+
+# repeat-quest-item 和 repeat-state-item 并非插件配置, 而是 YAML 语法, 只是方便利用重复的设定
+repeat-quest-item: &questItem
+  amount: 1
+  data: 0
+  # customModel: 0
+  name: "&f%questName%"
+  lore:
+    - ""
+    - " &f当前进度 %progress% &f(%pct%%) "
+    - ""
+repeat-state-item: &stateItem
+  commands:
+    - "say hahahahaha."
+  state:
+    - type: GREEN_STAINED_GLASS_PANE
+      amount: 1
+      data: 13
+      name: "&a已领取"
+      lore: [ ]
+    - type: YELLOW_STAINED_GLASS_PANE
+      amount: 1
+      data: 4
+      name: "&e待领取"
+      lore: [ ]
+    - type: RED_STAINED_GLASS_PANE
+      amount: 1
+      data: 14
+      name: "&c未完成"
+      lore: [ ]
+
+quest-item:
+  - type: STONE
+    <<: *questItem
+    slot: 13
+    quest: "example1"
+  - type: DIRT
+    <<: *questItem
+    slot: 14
+    quest: "example2"
+  - type: SAND
+    <<: *questItem
+    slot: 15
+    quest: "example3"
+
+state-item:
+  - slot: 12
+    quests: *requreQuests
+    claimKey: "default-1"
+    <<: *stateItem
+  - slot: 16
+    quests: *requreQuests
+    claimKey: "default-1"
+    <<: *stateItem
+
+items:
+  - type: BLACK_STAINED_GLASS_PANE
+    amount: 1
+    data: 15
+    name: "&f"
+    lore: []
+    slot: 0-9,17-26
+  - type: IRON_INGOT
+    amount: 1
+    data: 0
+    name: "&c▶ &aCommon"
+    lore:
+      - ""
+      - "&e点击查看"
+    slot: 10
+    view: "default"
+  - type: GOLD_INGOT
+    amount: 1
+    data: 0
+    name: "&7Rare"
+    lore:
+      - ""
+      - "&e点击查看"
+    slot: 11
+    view: "rare"
