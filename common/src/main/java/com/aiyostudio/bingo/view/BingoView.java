@@ -11,7 +11,9 @@ import com.aiyostudio.bingo.i18n.I18n;
 import com.aiyostudio.bingo.util.TextUtil;
 import com.aystudio.core.bukkit.util.common.CommonUtil;
 import com.aystudio.core.bukkit.util.inventory.GuiModel;
+import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.nbtapi.utils.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -122,6 +124,10 @@ public class BingoView {
             if (config.contains("view")) {
                 NBTItem nbtItem = new NBTItem(itemStack);
                 nbtItem.setString("BingoView", config.getString("view"));
+                if (config.contains("nbt")) {
+                    ReadWriteNBT compound = NBT.parseNBT(config.getString("nbt"));
+                    nbtItem.mergeCompound(compound);
+                }
                 itemStack = nbtItem.getItem();
             }
             for (int slot : CommonUtil.formatSlots(config.getString("slot"))) {
@@ -172,6 +178,14 @@ public class BingoView {
             }
             itemMeta.setLore(lore);
             itemStack.setItemMeta(itemMeta);
+
+            if (config.contains("nbt")) {
+                NBTItem nbtItem = new NBTItem(itemStack);
+                ReadWriteNBT compound = NBT.parseNBT(config.getString("nbt"));
+                nbtItem.mergeCompound(compound);
+                itemStack = nbtItem.getItem();
+            }
+
             for (int slot : CommonUtil.formatSlots(config.getString("slot"))) {
                 model.setItem(slot, itemStack);
             }
@@ -213,6 +227,10 @@ public class BingoView {
 
             NBTItem nbtItem = new NBTItem(itemStack);
             nbtItem.setString("BingoQuestReward", claimKey);
+            if (config.contains("nbt")) {
+                ReadWriteNBT compound = NBT.parseNBT(config.getString("nbt"));
+                nbtItem.mergeCompound(compound);
+            }
             itemStack = nbtItem.getItem();
 
             for (int slot : CommonUtil.formatSlots(s.getString("slot"))) {

@@ -8,6 +8,7 @@ repeat-quest-item: &questItem
   amount: 1
   data: 0
   # customModel: 0
+  # nbt: "{}"
   name: "&f%questName%"
   lore:
     - ""
