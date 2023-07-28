@@ -44,7 +44,7 @@ public class UnlockGroupTask implements Runnable {
 
 
     public boolean detectionCondition(Player player, List<String> conditions) {
-        if (conditions.size() == 0) {
+        if (conditions.isEmpty()) {
             return true;
         }
         try {

@@ -20,12 +20,12 @@ import java.util.*;
  * @author AiYo Studio
  * @since 1.0.0 - Blank038 - 2023-07-22
  */
+@Getter
 public class PlayerCache {
     private final UUID uniqueId;
     private final List<String> claimed = new ArrayList<>(), unlockGroup = new ArrayList<>(),
             receivedSegmentRewards = new ArrayList<>();
     private final Map<String, QuestProgressCache> progress = new HashMap<>();
-    @Getter
     @Setter
     private boolean newData;
 
@@ -89,9 +89,8 @@ public class PlayerCache {
         return this.claimed.contains(claimKey);
     }
 
-
     public void createQuestProgress(String questId) {
-        if (this.progress.containsKey(questId)) {
+        if (this.progress.containsKey(questId) || !CacheManager.hasQuest(questId)) {
             return;
         }
         this.progress.put(questId, new QuestProgressCache(questId));
@@ -162,10 +161,6 @@ public class PlayerCache {
         progress.forEach((k, v) -> section.set(k, v.toSection()));
         data.set("progress", section);
         return data;
-    }
-
-    public UUID getUniqueId() {
-        return this.uniqueId;
     }
 
     @Getter

@@ -63,7 +63,7 @@ items:
     amount: 1
     data: 15
     name: "&f"
-    lore: []
+    lore: [ ]
     slot: 0-9,17-26
   - type: IRON_INGOT
     amount: 1
