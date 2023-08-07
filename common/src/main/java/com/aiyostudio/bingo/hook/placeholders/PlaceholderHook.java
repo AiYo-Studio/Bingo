@@ -70,6 +70,11 @@ public class PlaceholderHook extends PlaceholderExpansion {
         return Bingo.getInstance().getDescription().getVersion();
     }
 
+    @Override
+    public boolean persist() {
+        return true;
+    }
+
     public static String format(Player target, String line) {
         if (instance == null) {
             return line;
