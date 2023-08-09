@@ -191,9 +191,15 @@ public class PlayerCache {
 
         private void calProgress() {
             QuestCache questCache = CacheManager.getQuestCache(this.questId);
-            if (questCache != null && this.progressEntryMap.isEmpty()) {
+            if (questCache == null) {
+                return;
+            }
+            String progressKey = questCache.getQuestType() + "-" + questCache.getCondition();
+            if (this.progressEntryMap.isEmpty() || !this.progressEntryMap.containsKey(progressKey)) {
+                this.progressEntryMap.clear();
+
                 ProgressEntry progressEntry = new ProgressEntry(questCache.getQuestType(), questCache.getCondition(), 0);
-                this.progressEntryMap.put(questCache.getQuestType() + "-" + questCache.getCondition(), progressEntry);
+                this.progressEntryMap.put(progressKey, progressEntry);
             }
         }
 
