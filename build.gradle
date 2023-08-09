@@ -6,7 +6,7 @@ plugins {
 }
 
 project.ext {
-    ver = "1.0.0-SNAPSHOT"
+    ver = "1.0.1-SNAPSHOT"
 }
 
 dependencies {
