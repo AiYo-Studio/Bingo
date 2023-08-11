@@ -2,6 +2,8 @@ package com.aiyostudio.bingo.dao;
 
 import com.aiyostudio.bingo.cacheframework.cache.PlayerCache;
 
+import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -28,4 +30,10 @@ public interface IDataSource {
     boolean isLocked(UUID uniqueId);
 
     void setLock(UUID uniqueId, boolean lock);
+
+    void loadJobResetData(String... keys);
+
+    void resetJobCache(String jobKey, Date date);
+
+    Date getJobResetDate(String jobKey);
 }

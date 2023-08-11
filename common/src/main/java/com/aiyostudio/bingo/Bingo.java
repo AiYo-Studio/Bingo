@@ -16,6 +16,7 @@ import com.aiyostudio.bingo.service.IModelService;
 import com.aiyostudio.bingo.task.UnlockGroupTask;
 import com.aystudio.core.bukkit.plugin.AyPlugin;
 import org.bukkit.Bukkit;
+import org.quartz.SchedulerException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -50,7 +51,11 @@ public class Bingo extends AyPlugin {
 
     public void loadConfig() {
         DefaultConfig.initialize();
-        CacheManager.initialize();
+        try {
+            CacheManager.initialize();
+        } catch (SchedulerException e) {
+            this.getLogger().severe(e.toString());
+        }
         new I18n(DefaultConfig.getConfig().getString("language", "zh_CN"));
     }
 

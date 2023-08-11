@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.Base64;
+import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -24,13 +25,19 @@ public class SQLiteDataSourceImpl extends AbstractDataSourceImpl {
 
     public SQLiteDataSourceImpl(DataSourceConfig dataSourceConfig) {
         super(DataSourceType.SQLITE, dataSourceConfig);
-        this.connect((s) -> {
-            try {
-                s.executeUpdate();
-            } catch (SQLException e) {
-                Bingo.getInstance().getLogger().severe(e.toString());
-            }
-        }, "CREATE TABLE IF NOT EXISTS bingo_users (user VARCHAR(36) NOT NULL, data TEXT, locked INT, PRIMARY KEY ( user ));");
+        String[] array = {
+                "CREATE TABLE IF NOT EXISTS bingo_users (user VARCHAR(36) NOT NULL, data TEXT, locked INT, PRIMARY KEY ( user ));",
+                "CREATE TABLE IF NOT EXISTS bingo_jobs (id INTEGER PRIMARY KEY AUTOINCREMENT, job VARCHAR(100), date DATETIME);"
+        };
+        for (String sql : array) {
+            this.connect((s) -> {
+                try {
+                    s.executeUpdate();
+                } catch (SQLException e) {
+                    Bingo.getInstance().getLogger().severe(e.toString());
+                }
+            }, sql);
+        }
     }
 
     @Override
@@ -115,6 +122,53 @@ public class SQLiteDataSourceImpl extends AbstractDataSourceImpl {
                 Bingo.getInstance().getLogger().severe(e.toString());
             }
         }, String.format("UPDATE bingo_users SET locked=%s WHERE user='%s'", (lock ? 1 : 0), uniqueId.toString()));
+    }
+
+    @Override
+    public void loadJobResetData(String... keys) {
+        this.jobDateMap.clear();
+        if (keys.length == 0) {
+            this.connect((statement) -> {
+                try {
+                    ResultSet resultSet = statement.executeQuery();
+                    while (resultSet.next()) {
+                        this.jobDateMap.put(resultSet.getString(1), resultSet.getDate(2));
+                    }
+                    resultSet.close();
+                } catch (SQLException e) {
+                    Bingo.getInstance().getLogger().severe(e.toString());
+                }
+            }, "SELECT job, MAX(date) AS date FROM bingo_jobs GROUP BY job ORDER BY date DESC;");
+        } else {
+            for (String key : keys) {
+                this.connect((statement) -> {
+                    try {
+                        statement.setString(1, key);
+
+                        ResultSet resultSet = statement.executeQuery();
+                        while (resultSet.next()) {
+                            this.jobDateMap.put(resultSet.getString(1), resultSet.getDate(2));
+                        }
+                        resultSet.close();
+                    } catch (SQLException e) {
+                        Bingo.getInstance().getLogger().severe(e.toString());
+                    }
+                }, "SELECT job, MAX(date) AS date FROM bingo_jobs WHERE job=? ORDER BY date DESC;");
+            }
+        }
+    }
+
+    @Override
+    public void resetJobCache(String jobKey, Date date) {
+        this.jobDateMap.put(jobKey, date);
+        this.connect((statement) -> {
+            try {
+                statement.setString(1, jobKey);
+                statement.setDate(2, new java.sql.Date(date.getTime()));
+            } catch (SQLException e) {
+                Bingo.getInstance().getLogger().severe(e.toString());
+            }
+        }, "INSERT INTO bingo_jobs (job, date) VALUES (?, ?);");
     }
 
     public void connect(CustomExecute<PreparedStatement> executeModel, String sql) {

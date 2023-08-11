@@ -8,6 +8,10 @@ import com.aiyostudio.bingo.enums.DataSourceType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author AiYo Studio
  * @since 1.0.0 - Blank038 - 2023-07-22
@@ -18,10 +22,17 @@ public abstract class AbstractDataSourceImpl implements IDataSource {
     private final DataSourceConfig dataSourceConfig;
     @Setter
     private String dataSourceTag;
+    protected final Map<String, Date> jobDateMap = new HashMap<>();
 
     public AbstractDataSourceImpl(DataSourceType sourceType, DataSourceConfig dataSourceConfig) {
         this.dataSourceConfig = dataSourceConfig;
         this.dataSourceType = sourceType;
+        this.loadJobResetData();
+    }
+
+    @Override
+    public Date getJobResetDate(String jobKey) {
+        return this.jobDateMap.getOrDefault(jobKey, null);
     }
 
     public static IDataSource of(DataSourceConfig config) {

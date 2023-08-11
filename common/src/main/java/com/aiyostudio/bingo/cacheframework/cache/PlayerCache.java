@@ -3,8 +3,10 @@ package com.aiyostudio.bingo.cacheframework.cache;
 import com.aiyostudio.bingo.api.BingoApi;
 import com.aiyostudio.bingo.api.event.BingoQuestCompleteEvent;
 import com.aiyostudio.bingo.cacheframework.manager.CacheManager;
+import com.aiyostudio.bingo.dao.IDataSource;
 import com.aiyostudio.bingo.enums.QuestStatus;
 import com.aiyostudio.bingo.hook.placeholders.PlaceholderHook;
+import com.aiyostudio.bingo.util.CommonUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +28,7 @@ public class PlayerCache {
     private final List<String> claimed = new ArrayList<>(), unlockGroup = new ArrayList<>(),
             receivedSegmentRewards = new ArrayList<>();
     private final Map<String, QuestProgressCache> progress = new HashMap<>();
+    private final Map<String, String> cronTasks = new HashMap<>();
     @Setter
     private boolean newData;
 
@@ -38,7 +41,7 @@ public class PlayerCache {
         if (data.contains("progress")) {
             ConfigurationSection section = data.getConfigurationSection("progress");
             for (String key : section.getKeys(false)) {
-                progress.put(key, new QuestProgressCache(section.getConfigurationSection(key)));
+                progress.put(key, new QuestProgressCache(key, section.getConfigurationSection(key)));
             }
         }
         this.unlockGroup.addAll(data.getStringList("unlockGroup"));
@@ -49,6 +52,19 @@ public class PlayerCache {
                 CacheManager.getGroupCache(s).getUnlockList().stream()
                         .filter(v -> !progress.containsKey(v))
                         .forEach(this::createQuestProgress);
+            }
+        });
+
+        this.checkInvalidJobs();
+    }
+
+    public void checkInvalidJobs() {
+        IDataSource dataSource = CacheManager.getDataSource();
+        CacheManager.getJobCacheMap().forEach((k, v) -> {
+            String formatDate = CommonUtil.formatDate(dataSource.getJobResetDate(k));
+            if (!this.cronTasks.containsKey(k) || !this.cronTasks.get(k).equals(formatDate)) {
+                this.cronTasks.put(k, formatDate);
+                v.getQuestList().forEach(q -> this.resetQuestProgress(q, true));
             }
         });
     }
@@ -94,6 +110,12 @@ public class PlayerCache {
             return;
         }
         this.progress.put(questId, new QuestProgressCache(questId));
+    }
+
+    public void resetQuestProgress(String questId, boolean forced) {
+        if ((this.progress.containsKey(questId) || forced) && CacheManager.hasQuest(questId)) {
+            this.progress.put(questId, new QuestProgressCache(questId));
+        }
     }
 
     public void addQuestProgress(String questType, String condition, int count) {
@@ -172,11 +194,11 @@ public class PlayerCache {
         public QuestProgressCache(String questId) {
             this.questStatus = QuestStatus.PROGRESS;
             this.questId = questId;
-            this.calProgress();
+            this.checkInvalidProgress();
         }
 
-        public QuestProgressCache(ConfigurationSection section) {
-            this.questId = section.getString("questId");
+        public QuestProgressCache(String questId, ConfigurationSection section) {
+            this.questId = questId;
             this.questStatus = QuestStatus.valueOf(section.getString("status"));
             if (section.contains("progressList")) {
                 for (String key : section.getConfigurationSection("progressList").getKeys(false)) {
@@ -186,10 +208,10 @@ public class PlayerCache {
                     this.progressEntryMap.put(key, progressEntry);
                 }
             }
-            this.calProgress();
+            this.checkInvalidProgress();
         }
 
-        private void calProgress() {
+        private void checkInvalidProgress() {
             QuestCache questCache = CacheManager.getQuestCache(this.questId);
             if (questCache == null) {
                 return;

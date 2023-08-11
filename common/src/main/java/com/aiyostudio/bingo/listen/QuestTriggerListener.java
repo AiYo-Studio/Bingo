@@ -42,7 +42,7 @@ public class QuestTriggerListener implements Listener {
         if (event.getEntity().getKiller() != null) {
             LivingEntity entity = event.getEntity();
             String entityName = entity.getCustomName() != null ? entity.getCustomName() : entity.getType().name();
-            BingoApi.submit(entity.getKiller(), "kill_entity", entityName, 1);
+            BingoApi.submit(entity.getKiller(), "kill_entity", entityName.replace("§", "&"), 1);
         }
     }
 

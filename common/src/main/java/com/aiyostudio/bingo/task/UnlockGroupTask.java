@@ -39,6 +39,8 @@ public class UnlockGroupTask implements Runnable {
                     Bukkit.getPluginManager().callEvent(event);
                 }
             }
+            // check invaild jobs
+            playerCache.checkInvalidJobs();
         }
     }
 
@@ -58,7 +60,7 @@ public class UnlockGroupTask implements Runnable {
             }
             return (boolean) SCRIPT_ENGINE.eval(PlaceholderHook.format(player, stringBuilder.toString()));
         } catch (Exception e) {
-            Bingo.getInstance().getLogger().severe("条件判断出现异常 " + e);
+            Bingo.getInstance().getLogger().severe(" Condition is invalid " + e);
             return false;
         }
     }

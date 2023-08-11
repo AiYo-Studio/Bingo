@@ -2,6 +2,7 @@ package com.aiyostudio.bingo.cacheframework.manager;
 
 import com.aiyostudio.bingo.Bingo;
 import com.aiyostudio.bingo.cacheframework.cache.*;
+import com.aiyostudio.bingo.cron.CronJob;
 import com.aiyostudio.bingo.dao.IDataSource;
 import com.aiyostudio.bingo.util.TextUtil;
 import com.aystudio.core.bukkit.interfaces.CustomExecute;
@@ -9,6 +10,8 @@ import de.tr7zw.nbtapi.utils.MinecraftVersion;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 
 import java.io.File;
 import java.util.HashMap;
@@ -25,6 +28,8 @@ public class CacheManager {
     private static final Map<String, ViewCache> VIEW_CACHE_MAP = new HashMap<>();
     private static final Map<String, NodeCache> NODE_CACHE_MAP = new HashMap<>();
     private static final Map<String, GroupCache> GROUP_CACHE_MAP = new HashMap<>();
+    private static final Map<String, JobCache> JOB_CACHE_MAP = new HashMap<>();
+    private static Scheduler scheduler;
 
     private static final CustomExecute<File> QUEST_LOAD_SCRIPT = (file) -> {
         FileConfiguration data = YamlConfiguration.loadConfiguration(file);
@@ -35,11 +40,12 @@ public class CacheManager {
     private static IDataSource dataSource;
 
 
-    public static void initialize() {
+    public static void initialize() throws SchedulerException {
         CacheManager.loadQuestCache();
         CacheManager.loadViewCache();
         CacheManager.loadGroupCache();
         CacheManager.loadNodeCache();
+        CacheManager.loadJobs();
     }
 
     private static void loadQuestCache() {
@@ -51,6 +57,16 @@ public class CacheManager {
             Bingo.getInstance().saveResource("quests/rare.yml", "quests/rare.yml");
         }
         CacheManager.loadQuestCache(questFolder);
+    }
+
+    private static void loadQuestCache(File targetFile) {
+        if (targetFile.isDirectory()) {
+            for (File child : targetFile.listFiles()) {
+                CacheManager.loadQuestCache(child);
+            }
+        } else {
+            CacheManager.QUEST_LOAD_SCRIPT.run(targetFile);
+        }
     }
 
     private static void loadViewCache() {
@@ -100,6 +116,42 @@ public class CacheManager {
         }
     }
 
+    private static void loadJobs() throws SchedulerException {
+        if (scheduler == null) {
+            SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+            scheduler = schedulerFactory.getScheduler();
+        }
+        CacheManager.JOB_CACHE_MAP.clear();
+        scheduler.clear();
+
+        File jobFolder = new File(Bingo.getInstance().getDataFolder(), "job");
+        if (!jobFolder.exists()) {
+            Bingo.getInstance().saveResource("jobs/example.yml", "jobs/example.yml");
+        }
+
+        for (File i : jobFolder.listFiles()) {
+            String key = i.getName().substring(0, i.getName().indexOf(".yml"));
+            FileConfiguration data = YamlConfiguration.loadConfiguration(i);
+
+            CacheManager.JOB_CACHE_MAP.put(key, new JobCache(data));
+
+            // start cron task
+            JobDetail jobDetail = JobBuilder.newJob(CronJob.class)
+                    .withIdentity(key, "bingoJobGroup")
+                    .usingJobData("JobKey", key)
+                    .build();
+            Trigger trigger = TriggerBuilder.newTrigger()
+                    .withIdentity(key + "Trigger", "bingoTriggerGroup")
+                    .withSchedule(CronScheduleBuilder.cronSchedule(data.getString("expression")))
+                    .build();
+            scheduler.scheduleJob(jobDetail, trigger);
+        }
+
+        if (!scheduler.isStarted()) {
+            scheduler.start();
+        }
+    }
+
     public static IDataSource getDataSource() {
         return dataSource;
     }
@@ -108,15 +160,7 @@ public class CacheManager {
         CacheManager.dataSource = dataSource;
     }
 
-    private static void loadQuestCache(File targetFile) {
-        if (targetFile.isDirectory()) {
-            for (File child : targetFile.listFiles()) {
-                CacheManager.loadQuestCache(child);
-            }
-        } else {
-            CacheManager.QUEST_LOAD_SCRIPT.run(targetFile);
-        }
-    }
+
 
     public static void loadCache(UUID uuid) {
         CacheManager.unloadCache(uuid);
@@ -177,5 +221,9 @@ public class CacheManager {
 
     public static Map<String, NodeCache> getAllNodes() {
         return CacheManager.NODE_CACHE_MAP;
+    }
+
+    public static Map<String, JobCache> getJobCacheMap() {
+        return CacheManager.JOB_CACHE_MAP;
     }
 }
