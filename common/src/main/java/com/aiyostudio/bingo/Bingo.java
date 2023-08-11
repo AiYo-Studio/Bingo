@@ -18,8 +18,11 @@ import com.aystudio.core.bukkit.plugin.AyPlugin;
 import org.bukkit.Bukkit;
 import org.quartz.SchedulerException;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 
 /**
  * @author AiYo Studio
@@ -31,6 +34,12 @@ public class Bingo extends AyPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        try {
+            CacheManager.initializeCronScheduler();
+        } catch (SchedulerException e) {
+            this.getLogger().severe(e.toString());
+        }
+
         this.getConsoleLogger().setPrefix("&f[&bBingo&f] ");
         this.getConsoleLogger().log(false, " ");
         this.getConsoleLogger().log(false, "&6   Bingo (AiYo Studio) &av" + this.getDescription().getVersion());
@@ -51,9 +60,19 @@ public class Bingo extends AyPlugin {
 
     public void loadConfig() {
         DefaultConfig.initialize();
+
+        File storageFolder = new File(this.getDataFolder(), "storage");
         try {
+            Files.createDirectories(storageFolder.toPath());
+
+            File playerData = new File(this.getDataFolder(), "playerData");
+            if (playerData.exists()) {
+                File to = new File(storageFolder, "playerData");
+                Files.move(playerData.toPath(), to.toPath());
+            }
+
             CacheManager.initialize();
-        } catch (SchedulerException e) {
+        } catch (IOException | SchedulerException e) {
             this.getLogger().severe(e.toString());
         }
         new I18n(DefaultConfig.getConfig().getString("language", "zh_CN"));

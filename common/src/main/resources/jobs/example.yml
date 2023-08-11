@@ -1,5 +1,7 @@
 expression: "0 0 0 1 * ? *"
 #quests: "example1,example2,example3"
-quests: []
+quests: ""
+#segmentRewards: "default-1" # 对应 view 文件内 state-item 的 claimKey
+segmentRewards: ""
 # 当前只有 NORMAL
 type: NORMAL

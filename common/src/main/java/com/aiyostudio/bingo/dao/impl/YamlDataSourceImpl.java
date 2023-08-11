@@ -24,7 +24,7 @@ public class YamlDataSourceImpl extends AbstractDataSourceImpl {
 
     @Override
     public PlayerCache getPlayerCache(UUID uniqueId) {
-        File file = new File(Bingo.getInstance().getDataFolder(), "playerData");
+        File file = new File(Bingo.getInstance().getDataFolder() + "/storage/", "playerData");
         if (!file.exists()) {
             file.mkdir();
         }
@@ -33,7 +33,7 @@ public class YamlDataSourceImpl extends AbstractDataSourceImpl {
 
     @Override
     public void save(PlayerCache playerCache, int locked) {
-        File file = new File(Bingo.getInstance().getDataFolder(), "playerData");
+        File file = new File(Bingo.getInstance().getDataFolder() + "/storage/", "playerData");
         if (!file.exists()) {
             file.mkdir();
         }
@@ -57,7 +57,7 @@ public class YamlDataSourceImpl extends AbstractDataSourceImpl {
     public void loadJobResetData(String... keys) {
         this.jobDateMap.clear();
 
-        File file = new File(Bingo.getInstance().getDataFolder(), "jobData");
+        File file = new File(Bingo.getInstance().getDataFolder() + "/storage/", "jobs");
         if (!file.exists()) {
             file.mkdir();
         }
@@ -80,7 +80,7 @@ public class YamlDataSourceImpl extends AbstractDataSourceImpl {
     public void resetJobCache(String jobKey, Date date) {
         this.jobDateMap.put(jobKey, date);
 
-        File file = new File(Bingo.getInstance().getDataFolder(), "jobData");
+        File file = new File(Bingo.getInstance().getDataFolder() + "/storage/", "jobs");
         if (!file.exists()) {
             file.mkdir();
         }

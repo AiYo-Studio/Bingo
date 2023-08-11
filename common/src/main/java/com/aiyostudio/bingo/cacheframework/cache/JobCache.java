@@ -13,10 +13,11 @@ import java.util.List;
 @Getter
 public class JobCache {
     private final String expression;
-    private final List<String> questList;
+    private final List<String> questList, segmentRewards;
 
     public JobCache(FileConfiguration data) {
         this.expression = data.getString("expression");
         this.questList = Lists.newArrayList(data.getString("quests").split(","));
+        this.segmentRewards = Lists.newArrayList(data.getString("segmentRewards").split(","));
     }
 }

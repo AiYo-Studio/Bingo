@@ -55,15 +55,27 @@ public class PlayerCache {
             }
         });
 
+        if (data.contains("cronTasks")) {
+            ConfigurationSection section = data.getConfigurationSection("cronTasks");
+            for (String key : section.getKeys(false)) {
+                cronTasks.put(key, section.getString(key));
+            }
+        }
+
         this.checkInvalidJobs();
     }
 
     public void checkInvalidJobs() {
         IDataSource dataSource = CacheManager.getDataSource();
         CacheManager.getJobCacheMap().forEach((k, v) -> {
-            String formatDate = CommonUtil.formatDate(dataSource.getJobResetDate(k));
+            Date date = dataSource.getJobResetDate(k);
+            if (date == null) {
+                return;
+            }
+            String formatDate = CommonUtil.formatDate(date);
             if (!this.cronTasks.containsKey(k) || !this.cronTasks.get(k).equals(formatDate)) {
                 this.cronTasks.put(k, formatDate);
+                this.receivedSegmentRewards.removeIf(v.getSegmentRewards()::contains);
                 v.getQuestList().forEach(q -> this.resetQuestProgress(q, true));
             }
         });
@@ -179,9 +191,15 @@ public class PlayerCache {
         data.set("claimed", this.claimed);
         data.set("unlockGroup", this.unlockGroup);
         data.set("receivedSegmentRewards", this.receivedSegmentRewards);
+
         ConfigurationSection section = new YamlConfiguration();
         progress.forEach((k, v) -> section.set(k, v.toSection()));
         data.set("progress", section);
+
+        ConfigurationSection cronTaskSection = new YamlConfiguration();
+        this.cronTasks.forEach(cronTaskSection::set);
+        data.set("cronTasks", cronTaskSection);
+
         return data;
     }
 

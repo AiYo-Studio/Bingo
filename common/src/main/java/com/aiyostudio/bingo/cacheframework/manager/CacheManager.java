@@ -48,6 +48,14 @@ public class CacheManager {
         CacheManager.loadJobs();
     }
 
+    public static void initializeCronScheduler() throws SchedulerException {
+        if (scheduler == null) {
+            StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
+            schedulerFactory.initialize(Bingo.getInstance().getResource("com/aiyostudio/bingo/quartz.properties"));
+            scheduler = schedulerFactory.getScheduler();
+        }
+    }
+
     private static void loadQuestCache() {
         CacheManager.QUEST_CACHE_MAP.clear();
 
@@ -117,14 +125,10 @@ public class CacheManager {
     }
 
     private static void loadJobs() throws SchedulerException {
-        if (scheduler == null) {
-            SchedulerFactory schedulerFactory = new StdSchedulerFactory();
-            scheduler = schedulerFactory.getScheduler();
-        }
         CacheManager.JOB_CACHE_MAP.clear();
         scheduler.clear();
 
-        File jobFolder = new File(Bingo.getInstance().getDataFolder(), "job");
+        File jobFolder = new File(Bingo.getInstance().getDataFolder(), "jobs");
         if (!jobFolder.exists()) {
             Bingo.getInstance().saveResource("jobs/example.yml", "jobs/example.yml");
         }
