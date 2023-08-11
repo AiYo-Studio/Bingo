@@ -1,3 +1,7 @@
+plugins {
+    id 'com.github.johnrengelman.shadow'
+}
+
 dependencies {
     implementation("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
     implementation("org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT")
@@ -8,4 +12,19 @@ dependencies {
     implementation("de.tr7zw:item-nbt-api-plugin:2.11.2")
     // PlaceholderAPI
     implementation('me.clip:placeholderapi:2.10.4')
+    // Quartz
+    implementation 'org.quartz-scheduler:quartz:2.3.2'
 }
+
+shadowJar {
+    setArchiveName("Bingo.jar")
+
+    relocate 'org.quartz', 'org.bingo.quartz'
+    relocate 'org.terracotta', 'org.bingo.terracotta'
+
+    dependencies {
+        include(dependency("org.quartz-scheduler:quartz:2.3.2"))
+    }
+}
+
+tasks.build.dependsOn(tasks.shadowJar)
