@@ -3,5 +3,6 @@ expression: "0 0 0 1 * ? *"
 quests: ""
 #segmentRewards: "default-1" # 对应 view 文件内 state-item 的 claimKey
 segmentRewards: ""
-# 当前只有 NORMAL
+# 当前只有 NORMAL, RANDOM
 type: NORMAL
+#random: 1 # 随机任务数, 当 type 为 RANDOM 时, 此处生效.

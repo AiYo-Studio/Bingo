@@ -1,5 +1,6 @@
 title: "&8Common"
 size: 27
+viewType: default
 
 require-quests: &requreQuests [ "example1", "example2", "example3" ]
 

@@ -4,6 +4,7 @@ import com.aiyostudio.bingo.util.TextUtil;
 import lombok.Getter;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Map;
 public class QuestCache {
     private final String questType, condition, questName;
     private final int amount;
+    private final List<String> appendLore = new ArrayList<>();
     private final Map<String, List<String>> commands = new HashMap<>();
 
     public QuestCache(ConfigurationSection section) {
@@ -23,6 +25,7 @@ public class QuestCache {
         this.questType = section.getString("type");
         this.condition = section.getString("condition");
         this.amount = section.getInt("amount");
+        this.appendLore.addAll(section.getStringList("appendLore"));
         if (section.contains("commands")) {
             for (String key : section.getConfigurationSection("commands").getKeys(false)) {
                 this.commands.put(key, section.getStringList("commands." + key));

@@ -15,18 +15,21 @@ import java.util.Map;
  */
 @Getter
 public class ViewCache {
-    private final List<String> requreQuests = new ArrayList<>();
+    private final List<String> requireQuests = new ArrayList<>();
     private final List<FileConfiguration> questItems = new ArrayList<>(),
             displayItems = new ArrayList<>(),
             stateItems = new ArrayList<>();
-    private final String viewTitle, viewId;
-    private final int viewSize;
+    private final String viewTitle, viewId, viewType;
+    private final int viewSize, requireCount;
+    private final FileConfiguration originConfiguration;
 
     public ViewCache(String viewId, FileConfiguration data) {
         this.viewId = viewId;
         this.viewTitle = TextUtil.formatHexColor(data.getString("title"));
         this.viewSize = data.getInt("size");
-        this.requreQuests.addAll(data.getStringList("require-quests"));
+        this.viewType = data.getString("viewType", "default");
+        this.requireCount = data.getInt("require-count", -1);
+        this.requireQuests.addAll(data.getStringList("require-quests"));
 
         data.getList("quest-item").forEach((s) -> {
             FileConfiguration configuration = new YamlConfiguration();
@@ -43,5 +46,6 @@ public class ViewCache {
             configuration.addDefaults((Map<String, Object>) s);
             displayItems.add(configuration);
         });
+        this.originConfiguration = data;
     }
 }

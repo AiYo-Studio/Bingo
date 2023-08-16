@@ -1,9 +1,10 @@
 package com.aiyostudio.bingo.command;
 
 import com.aiyostudio.bingo.Bingo;
+import com.aiyostudio.bingo.cacheframework.cache.ViewCache;
 import com.aiyostudio.bingo.cacheframework.manager.CacheManager;
 import com.aiyostudio.bingo.i18n.I18n;
-import com.aiyostudio.bingo.view.BingoView;
+import com.aiyostudio.bingo.view.AbstractView;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -53,7 +54,11 @@ public class BingoCommand implements CommandExecutor {
                 player.sendMessage(I18n.getStrAndHeader("data-not-load"));
                 return;
             }
-            BingoView.open(player, CacheManager.getViewCache(args[1]));
+            ViewCache viewCache = CacheManager.getViewCache(args[1]);
+            if (viewCache == null) {
+                return;
+            }
+            AbstractView.create(player, viewCache).open();
         }
     }
 

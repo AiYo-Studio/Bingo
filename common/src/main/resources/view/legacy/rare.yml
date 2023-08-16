@@ -1,5 +1,6 @@
 title: "&8Rare"
 size: 27
+viewType: default
 
 require-quests: &requreQuests [ "example4", "example5", "example6" ]
 

@@ -58,6 +58,9 @@ public class PlayerCache {
         this.checkInvalidJobs();
     }
 
+    /**
+     * Quest groups that check for missing progress.
+     */
     public void checkUnlockGroups() {
         this.unlockGroup.forEach(s -> {
             if (CacheManager.hasGroupCache(s)) {
@@ -68,6 +71,9 @@ public class PlayerCache {
         });
     }
 
+    /**
+     * Detect obsolete tasks.
+     */
     public void checkInvalidJobs() {
         IDataSource dataSource = CacheManager.getDataSource();
         CacheManager.getJobCacheMap().forEach((k, v) -> {
@@ -77,9 +83,33 @@ public class PlayerCache {
             }
             String formatDate = CommonUtil.formatDate(date);
             if (!this.cronTasks.containsKey(k) || !this.cronTasks.get(k).equals(formatDate)) {
+                // Update the reset time for cron task.
                 this.cronTasks.put(k, formatDate);
                 this.receivedSegmentRewards.removeIf(v.getSegmentRewards()::contains);
-                v.getQuestList().forEach(q -> this.resetQuestProgress(q, true));
+                // Check job type of JobTask.
+                switch (v.getJobType()) {
+                    case NORMAL:
+                        v.getQuestList().forEach(q -> this.resetQuestProgress(q, true));
+                        break;
+                    case RANDOM:
+                        List<String> quests = new ArrayList<>(v.getQuestList());
+                        int count = v.getRandom();
+                        // Remove obsolete quests.
+                        quests.forEach(this::removeQuestProgress);
+                        // Random quests.
+                        while (count > 0) {
+                            if (quests.isEmpty()) {
+                                break;
+                            }
+                            String questKey = quests.remove((int) (Math.random() * quests.size()));
+                            this.resetQuestProgress(questKey, true);
+                            System.out.println(questKey);
+                            count--;
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         });
     }
@@ -131,6 +161,10 @@ public class PlayerCache {
         if ((this.progress.containsKey(questId) || forced) && CacheManager.hasQuest(questId)) {
             this.progress.put(questId, new QuestProgressCache(questId));
         }
+    }
+
+    public QuestProgressCache removeQuestProgress(String questId) {
+        return this.progress.remove(questId);
     }
 
     public void addQuestProgress(String questType, String condition, int count) {

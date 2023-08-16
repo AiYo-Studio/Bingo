@@ -1,6 +1,5 @@
-package com.aiyostudio.bingo.view;
+package com.aiyostudio.bingo.view.impl;
 
-import com.aiyostudio.bingo.Bingo;
 import com.aiyostudio.bingo.cacheframework.cache.PlayerCache;
 import com.aiyostudio.bingo.cacheframework.cache.QuestCache;
 import com.aiyostudio.bingo.cacheframework.cache.ViewCache;
@@ -9,8 +8,8 @@ import com.aiyostudio.bingo.config.DefaultConfig;
 import com.aiyostudio.bingo.hook.placeholders.PlaceholderHook;
 import com.aiyostudio.bingo.i18n.I18n;
 import com.aiyostudio.bingo.util.TextUtil;
+import com.aiyostudio.bingo.view.AbstractView;
 import com.aystudio.core.bukkit.util.common.CommonUtil;
-import com.aystudio.core.bukkit.util.inventory.GuiModel;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.NBTItem;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
@@ -31,32 +30,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 /**
- * @author AiYo Studio
- * @since 1.0.0 - Blank038 - 2023-07-22
+ * @author Blank038
  */
-public class BingoView {
+public class DefaultViewImpl extends AbstractView {
+    private Map<String, List<String>[]> stateMap;
+    protected boolean checkRequireQuests = true;
 
-    public static void open(Player player, ViewCache viewCache) {
-        if (viewCache == null) {
-            return;
-        }
-        PlayerCache playerCache = CacheManager.getPlayerCache(player.getUniqueId());
-        if (viewCache.getRequreQuests().stream().anyMatch(s -> !playerCache.hasQuest(s))) {
+    public DefaultViewImpl(Player player, ViewCache viewCache) {
+        super(player, viewCache);
+    }
+
+    @Override
+    public void call() {
+    }
+
+    @Override
+    public void open() {
+        if (checkRequireQuests && viewCache.getRequireQuests().stream().anyMatch(s -> !playerCache.hasQuest(s))) {
             player.sendMessage(I18n.getStrAndHeader("view-locked"));
             return;
         }
-        GuiModel model = new GuiModel(viewCache.getViewTitle(), viewCache.getViewSize());
-        model.registerListener(Bingo.getInstance());
-        model.setCloseRemove(true);
+        super.open();
+    }
 
-        BingoView.initializeDisplayItem(player, model, viewCache);
-        BingoView.initializeQuestItem(player, model, playerCache, viewCache);
+    @Override
+    public void onPreInit() {
+        PlayerCache playerCache = CacheManager.getPlayerCache(player.getUniqueId());
+        if (viewCache.getRequireQuests().stream().anyMatch(s -> !playerCache.hasQuest(s))) {
+            player.sendMessage(I18n.getStrAndHeader("view-locked"));
+            return;
+        }
+        this.initializeDisplayItem();
+        this.initializeQuestItem();
+        this.stateMap = this.initializeStateItem();
+    }
 
-        Map<String, List<String>[]> map = BingoView.initializeStateItem(player, model, playerCache, viewCache);
-
-        model.execute((e) -> {
+    @Override
+    public void onPostInit() {
+        this.getModel().execute((e) -> {
             e.setCancelled(true);
             if (e.getClickedInventory() == e.getInventory()) {
                 ItemStack itemStack = e.getCurrentItem();
@@ -70,13 +82,13 @@ public class BingoView {
                     if (viewId.equals(viewCache.getViewId())) {
                         return;
                     }
-                    BingoView.open(clicker, CacheManager.getViewCache(viewId));
+                    this.open();
                 } else if (nbtItem.hasTag("BingoQuestReward")) {
                     String rewardId = nbtItem.getString("BingoQuestReward");
-                    if (!map.containsKey(rewardId)) {
+                    if (!this.stateMap.containsKey(rewardId)) {
                         return;
                     }
-                    List<String>[] array = map.get(rewardId);
+                    List<String>[] array = this.stateMap.get(rewardId);
                     PlayerCache tempPlayerCache = CacheManager.getPlayerCache(player.getUniqueId());
                     if (tempPlayerCache.isReceived(rewardId)) {
                         clicker.sendMessage(I18n.getStrAndHeader("reward-received"));
@@ -84,26 +96,23 @@ public class BingoView {
                     }
                     if (array[0].stream().allMatch(tempPlayerCache::isCompleted)) {
                         tempPlayerCache.addReceivedRewardKey(rewardId);
-
                         array[1].forEach((command) -> {
                             String last = PlaceholderHook.format(clicker, command);
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), last.replace("%player%", clicker.getName()));
                         });
-
                         clicker.sendMessage(I18n.getStrAndHeader("gotten-reward"));
-
-                        BingoView.open(clicker, viewCache);
+                        this.open();
                     } else {
                         clicker.sendMessage(I18n.getStrAndHeader("quest-undone"));
                     }
                 }
             }
         });
-        model.openInventory(player);
     }
 
-    private static void initializeDisplayItem(Player target, GuiModel model, ViewCache viewCache) {
-        viewCache.getDisplayItems().forEach(config -> {
+    @Override
+    public void initializeDisplayItem() {
+        this.getViewCache().getDisplayItems().forEach(config -> {
             ItemStack itemStack = new ItemStack(Material.valueOf(config.getString("type")), 1);
             ItemMeta itemMeta = itemStack.getItemMeta();
             if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
@@ -117,7 +126,7 @@ public class BingoView {
             itemMeta.setDisplayName(TextUtil.formatHexColor(config.getString("name")));
             List<String> lore = new ArrayList<>();
             for (String line : config.getStringList("lore")) {
-                lore.add(TextUtil.formatHexColor(PlaceholderHook.format(target, line)));
+                lore.add(TextUtil.formatHexColor(PlaceholderHook.format(this.getPlayer(), line)));
             }
             itemMeta.setLore(lore);
             itemStack.setItemMeta(itemMeta);
@@ -131,12 +140,13 @@ public class BingoView {
                 itemStack = nbtItem.getItem();
             }
             for (int slot : CommonUtil.formatSlots(config.getString("slot"))) {
-                model.setItem(slot, itemStack);
+                this.getModel().setItem(slot, itemStack);
             }
         });
     }
 
-    private static void initializeQuestItem(Player target, GuiModel model, PlayerCache playerCache, ViewCache viewCache) {
+    @Override
+    public void initializeQuestItem() {
         viewCache.getQuestItems().forEach(config -> {
             String questId = config.getString("quest");
             QuestCache questCache = CacheManager.getQuestCache(questId);
@@ -171,11 +181,16 @@ public class BingoView {
                     .replace("%pct%", String.valueOf(pctInt))));
             List<String> lore = new ArrayList<>();
             for (String line : config.getStringList("lore")) {
-                lore.add(TextUtil.formatHexColor(PlaceholderHook.format(target, line))
-                        .replace("%questName%", questName)
-                        .replace("%progress%", progress)
-                        .replace("%pct%", String.valueOf(pctInt)));
+                if (line.contains("%appendLore%")) {
+                    lore.addAll(questCache.getAppendLore());
+                } else {
+                    lore.add(line);
+                }
             }
+            lore.replaceAll((s) -> TextUtil.formatHexColor(PlaceholderHook.format(this.player, s))
+                    .replace("%questName%", questName)
+                    .replace("%progress%", progress)
+                    .replace("%pct%", String.valueOf(pctInt)));
             itemMeta.setLore(lore);
             itemStack.setItemMeta(itemMeta);
 
@@ -192,7 +207,8 @@ public class BingoView {
         });
     }
 
-    private static Map<String, List<String>[]> initializeStateItem(Player target, GuiModel model, PlayerCache playerCache, ViewCache viewCache) {
+    @Override
+    public Map<String, List<String>[]> initializeStateItem() {
         Map<String, List<String>[]> result = new HashMap<>();
         viewCache.getStateItems().forEach(s -> {
             String claimKey = s.getString("claimKey");
@@ -220,7 +236,7 @@ public class BingoView {
             itemMeta.setDisplayName(TextUtil.formatHexColor(config.getString("name")));
             List<String> lore = new ArrayList<>();
             for (String line : config.getStringList("lore")) {
-                lore.add(TextUtil.formatHexColor(PlaceholderHook.format(target, line)));
+                lore.add(TextUtil.formatHexColor(PlaceholderHook.format(this.player, line)));
             }
             itemMeta.setLore(lore);
             itemStack.setItemMeta(itemMeta);

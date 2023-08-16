@@ -1,6 +1,7 @@
 example1:
   name: "挖十个石头"
   type: "break"
+  appendLore: []
   condition: "STONE"
   amount: 10
   commands:
@@ -9,6 +10,7 @@ example1:
 example2:
   name: "挖十个泥土"
   type: "break"
+  appendLore: []
   condition: "DIRT"
   amount: 10
   commands:
@@ -17,6 +19,7 @@ example2:
 example3:
   name: "挖十个沙子"
   type: "break"
+  appendLore: []
   condition: "SAND"
   amount: 10
   commands:
