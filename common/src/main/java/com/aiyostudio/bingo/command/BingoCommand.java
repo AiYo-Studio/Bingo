@@ -37,7 +37,7 @@ public class BingoCommand implements CommandExecutor {
 
     private void help(CommandSender sender, String label) {
         String optionKey = "help." + (sender.hasPermission("psbindbox.admin") ? "admin" : "default");
-        for (String line : I18n.getArrayOption(optionKey)){
+        for (String line : I18n.getArrayOption(optionKey)) {
             sender.sendMessage(line.replace("%c", label));
         }
     }
@@ -60,6 +60,7 @@ public class BingoCommand implements CommandExecutor {
     private void reload(CommandSender sender) {
         if (sender.hasPermission("bingo.admin")) {
             this.plugin.loadConfig();
+            CacheManager.getAllPlayerCaches().forEach((k, v) -> v.checkUnlockGroups());
             sender.sendMessage(I18n.getStrAndHeader("reload"));
         }
     }

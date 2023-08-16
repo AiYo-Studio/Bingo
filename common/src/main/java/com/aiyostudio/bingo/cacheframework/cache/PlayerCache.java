@@ -47,14 +47,6 @@ public class PlayerCache {
         this.unlockGroup.addAll(data.getStringList("unlockGroup"));
         this.receivedSegmentRewards.addAll(data.getStringList("receivedSegmentRewards"));
 
-        this.unlockGroup.forEach(s -> {
-            if (CacheManager.hasGroupCache(s)) {
-                CacheManager.getGroupCache(s).getUnlockList().stream()
-                        .filter(v -> !progress.containsKey(v))
-                        .forEach(this::createQuestProgress);
-            }
-        });
-
         if (data.contains("cronTasks")) {
             ConfigurationSection section = data.getConfigurationSection("cronTasks");
             for (String key : section.getKeys(false)) {
@@ -62,7 +54,18 @@ public class PlayerCache {
             }
         }
 
+        this.checkUnlockGroups();
         this.checkInvalidJobs();
+    }
+
+    public void checkUnlockGroups() {
+        this.unlockGroup.forEach(s -> {
+            if (CacheManager.hasGroupCache(s)) {
+                CacheManager.getGroupCache(s).getUnlockList().stream()
+                        .filter(v -> !progress.containsKey(v))
+                        .forEach(this::createQuestProgress);
+            }
+        });
     }
 
     public void checkInvalidJobs() {

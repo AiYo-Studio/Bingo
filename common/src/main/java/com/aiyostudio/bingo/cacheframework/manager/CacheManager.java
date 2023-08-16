@@ -187,6 +187,10 @@ public class CacheManager {
         return CacheManager.PLAYER_CACHE_MAP.containsKey(uuid);
     }
 
+    public static Map<UUID, PlayerCache> getAllPlayerCaches() {
+        return CacheManager.PLAYER_CACHE_MAP;
+    }
+
     public static QuestCache getQuestCache(String questId) {
         return CacheManager.QUEST_CACHE_MAP.getOrDefault(questId, null);
     }
