@@ -20,6 +20,7 @@ public class YamlDataSourceImpl extends AbstractDataSourceImpl {
 
     public YamlDataSourceImpl(DataSourceConfig config) {
         super(DataSourceType.YAML, config);
+        this.loadJobResetData();
     }
 
     @Override

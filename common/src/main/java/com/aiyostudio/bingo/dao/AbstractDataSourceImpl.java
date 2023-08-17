@@ -27,7 +27,6 @@ public abstract class AbstractDataSourceImpl implements IDataSource {
     public AbstractDataSourceImpl(DataSourceType sourceType, DataSourceConfig dataSourceConfig) {
         this.dataSourceConfig = dataSourceConfig;
         this.dataSourceType = sourceType;
-        this.loadJobResetData();
     }
 
     @Override

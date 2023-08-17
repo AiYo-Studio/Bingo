@@ -38,6 +38,7 @@ public class SQLiteDataSourceImpl extends AbstractDataSourceImpl {
                 }
             }, sql);
         }
+        this.loadJobResetData();
     }
 
     @Override

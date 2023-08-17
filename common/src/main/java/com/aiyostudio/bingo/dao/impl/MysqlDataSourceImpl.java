@@ -33,6 +33,7 @@ public class MysqlDataSourceImpl extends AbstractDataSourceImpl {
         };
         dataSourceHandler = new MySqlStorageHandler(Bingo.getInstance(), config.getUrl(), config.getUser(), config.getPassword(), array);
         dataSourceHandler.setReconnectionQueryTable("bingo_users");
+        this.loadJobResetData();
     }
 
     @Override
