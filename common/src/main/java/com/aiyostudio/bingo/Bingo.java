@@ -106,9 +106,9 @@ public class Bingo extends AyPlugin {
                 Class<? extends IModelService> c = (Class<? extends IModelService>) Class.forName(serviceClassURI);
                 Method method = c.getMethod("run");
                 method.invoke(c.newInstance());
-            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |
-                     InvocationTargetException e) {
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException e) {
                 this.getLogger().severe(e.toString());
+            } catch (ClassNotFoundException | InvocationTargetException ignored) {
             }
         }
     }
