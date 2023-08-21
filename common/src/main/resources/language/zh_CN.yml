@@ -27,7 +27,7 @@ pls-enter-edit-type: "请输入编辑类型."
 pls-enter-edit-value: "请输入编辑值."
 wrong-type: "错误的类型."
 
-error-type: "编辑失败."
+error-edit: "编辑失败."
 edit-complete: "编辑完成."
 
 view-not-found: "未找到可视化面板."
