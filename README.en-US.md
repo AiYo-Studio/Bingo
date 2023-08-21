@@ -1,6 +1,7 @@
 # Bingo
 
-> 此仓库不提供可运行文件, 如有需要请自行编译
+> This repository does not provide executable files.
+> Please compile them yourself if needed.
 
 [简体中文](./README.md) | **English**
 
