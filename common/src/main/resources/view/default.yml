@@ -4,6 +4,9 @@ size: 27
 # 当 ViewType 为 random 时, 才需要配置此参数, 并且 quest-item 配置失效, 改由 random-item 设定
 viewType: default
 
+# 每次查看都会计算条件, 语法与 group 条件语法一致
+always-condition: [ ]
+
 require-quests: &requreQuests [ "example1", "example2", "example3" ]
 # 对 require-quests 数量匹配, 如果为 -1 则需要玩家有 requre-quests 全部任务才允许打开面板
 # 这个参数一般用于配合 jobs 中类型为 random 的设定配合使用

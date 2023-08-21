@@ -15,7 +15,7 @@ import java.util.Map;
  */
 @Getter
 public class ViewCache {
-    private final List<String> requireQuests = new ArrayList<>();
+    private final List<String> requireQuests = new ArrayList<>(), alwaysCondition = new ArrayList<>();
     private final List<FileConfiguration> questItems = new ArrayList<>(),
             displayItems = new ArrayList<>(),
             stateItems = new ArrayList<>();
@@ -30,6 +30,7 @@ public class ViewCache {
         this.viewType = data.getString("viewType", "default");
         this.requireCount = data.getInt("require-count", -1);
         this.requireQuests.addAll(data.getStringList("require-quests"));
+        this.alwaysCondition.addAll(data.getStringList("always-condition"));
 
         data.getList("quest-item").forEach((s) -> {
             FileConfiguration configuration = new YamlConfiguration();

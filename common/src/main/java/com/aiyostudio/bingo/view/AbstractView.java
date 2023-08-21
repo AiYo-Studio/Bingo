@@ -5,6 +5,7 @@ import com.aiyostudio.bingo.cacheframework.cache.PlayerCache;
 import com.aiyostudio.bingo.cacheframework.cache.ViewCache;
 import com.aiyostudio.bingo.cacheframework.manager.CacheManager;
 import com.aiyostudio.bingo.registries.ViewRegistry;
+import com.aiyostudio.bingo.util.ScriptUtil;
 import com.aystudio.core.bukkit.util.inventory.GuiModel;
 import lombok.Getter;
 import org.bukkit.entity.Player;
@@ -32,6 +33,10 @@ public abstract class AbstractView implements IView {
     }
 
     public void open() {
+        if (!ScriptUtil.detectionCondition(player, this.viewCache.getAlwaysCondition())) {
+            this.player.sendMessage("view-condition-denied");
+            return;
+        }
         this.model = new GuiModel(viewCache.getViewTitle(), viewCache.getViewSize());
         this.model.registerListener(Bingo.getInstance());
         this.model.setCloseRemove(true);
