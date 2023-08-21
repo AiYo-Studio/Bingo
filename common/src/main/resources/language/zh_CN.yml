@@ -12,14 +12,27 @@ help:
     - "&6Bingo"
     - ""
     - "&a /%c view <界面编号> &f- 查看任务面板"
+    - "&a /%c edit <玩家名> <类型> <值> &f- 编辑玩家数据"
+    - "&f   当前可用类型"
+    - "&8     * &7resetGroup 值为组编号"
+    - "&8     * &7resetQuest 值为任务编号"
     - "&a /%c reload &f- 重载插件配置文件"
     - ""
 
 pulling-start: "正在加载你的数据."
 pulling-completed: "数据已经加载完成."
 
+pls-enter-player-name: "请输入玩家名."
+pls-enter-edit-type: "请输入编辑类型."
+pls-enter-edit-value: "请输入编辑值."
+wrong-type: "错误的类型."
+
+error-type: "编辑失败."
+edit-complete: "编辑完成."
+
 view-not-found: "未找到可视化面板."
 data-not-load: "数据还未加载完成."
+player-offline: "玩家不在线."
 
 reward-received: "该奖励你已领过."
 gotten-reward: "成功领取奖励."
