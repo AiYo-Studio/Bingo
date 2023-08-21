@@ -137,6 +137,10 @@ public class PlayerCache {
         this.unlockGroup.add(groupId);
     }
 
+    public void removeGroup(String groupId) {
+        this.unlockGroup.remove(groupId);
+    }
+
     public boolean isCompleted(String... questId) {
         for (String key : questId) {
             if (!this.progress.containsKey(key) || this.progress.get(key).getQuestStatus() == QuestStatus.PROGRESS) {

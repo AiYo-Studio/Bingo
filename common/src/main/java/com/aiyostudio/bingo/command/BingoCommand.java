@@ -118,7 +118,8 @@ public class BingoCommand implements CommandExecutor {
         switch (editType) {
             case RESET_GROUP:
                 if (playerCache.hasGroup(value) && CacheManager.hasGroupCache(value)) {
-                    CacheManager.getGroupCache(value).getUnlockList().forEach(s -> playerCache.resetQuestProgress(s, true));
+                    CacheManager.getGroupCache(value).getUnlockList().forEach(playerCache::removeQuestProgress);
+                    playerCache.removeGroup(value);
                     sender.sendMessage(I18n.getStrAndHeader("edit-complete"));
                 } else {
                     sender.sendMessage(I18n.getStrAndHeader("error-edit"));
