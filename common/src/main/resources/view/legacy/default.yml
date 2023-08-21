@@ -1,8 +1,13 @@
 title: "&8Common"
 size: 27
+
+# 当 ViewType 为 random 时, 才需要配置此参数, 并且 quest-item 配置失效, 改由 random-item 设定
 viewType: default
 
 require-quests: &requreQuests [ "example1", "example2", "example3" ]
+# 对 require-quests 数量匹配, 如果为 -1 则需要玩家有 requre-quests 全部任务才允许打开面板
+# 这个参数一般用于配合 jobs 中类型为 random 的设定配合使用
+require-count: -1
 
 # repeat-quest-item 和 repeat-state-item 并非插件配置, 而是 YAML 语法, 只是方便利用重复的设定
 repeat-quest-item: &questItem
@@ -13,6 +18,7 @@ repeat-quest-item: &questItem
   name: "&f%questName%"
   lore:
     - ""
+    - "%appendLore%"
     - " &f当前进度 %progress% &f(%pct%%) "
     - ""
 repeat-state-item: &stateItem
@@ -34,6 +40,13 @@ repeat-state-item: &stateItem
       data: 14
       name: "&c未完成"
       lore: [ ]
+
+#random-item:
+#  # 显示的槽位
+#  slots: [ 13,14,15 ]
+#  item:
+#    type: STONE
+#    <<: *questItem
 
 quest-item:
   - type: STONE
