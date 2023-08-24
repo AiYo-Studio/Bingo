@@ -29,7 +29,7 @@ public class MysqlDataSourceImpl extends AbstractDataSourceImpl {
         super(DataSourceType.MYSQL, config);
         String[] array = {
                 "CREATE TABLE IF NOT EXISTS bingo_users (user VARCHAR(36) NOT NULL, data TEXT, locked INT, PRIMARY KEY ( user )) ENGINE=InnoDB DEFAULT CHARSET=utf8;",
-                "CREATE TABLE IF NOT EXISTS bingo_jobs (id INT NOT NULL AUTO_INCREMENT, job VARCHAR(100), date DATETIME, PRIMARY KEY ( id )) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+                "CREATE TABLE IF NOT EXISTS bingo_jobs (id INT NOT NULL AUTO_INCREMENT, job VARCHAR(100), date TIMESTAMP, PRIMARY KEY ( id )) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
         };
         dataSourceHandler = new MySqlStorageHandler(Bingo.getInstance(), config.getUrl(), config.getUser(), config.getPassword(), array);
         dataSourceHandler.setReconnectionQueryTable("bingo_users");
@@ -127,7 +127,7 @@ public class MysqlDataSourceImpl extends AbstractDataSourceImpl {
                 try {
                     ResultSet resultSet = statement.executeQuery();
                     while (resultSet.next()) {
-                        this.jobDateMap.put(resultSet.getString(1), resultSet.getDate(2));
+                        this.jobDateMap.put(resultSet.getString(1), resultSet.getTimestamp(2));
                     }
                     resultSet.close();
                 } catch (SQLException e) {
@@ -142,7 +142,7 @@ public class MysqlDataSourceImpl extends AbstractDataSourceImpl {
 
                         ResultSet resultSet = statement.executeQuery();
                         while (resultSet.next()) {
-                            this.jobDateMap.put(resultSet.getString(1), resultSet.getDate(2));
+                            this.jobDateMap.put(resultSet.getString(1), resultSet.getTimestamp(2));
                         }
                         resultSet.close();
                     } catch (SQLException e) {
@@ -159,7 +159,8 @@ public class MysqlDataSourceImpl extends AbstractDataSourceImpl {
         dataSourceHandler.connect((statement) -> {
             try {
                 statement.setString(1, jobKey);
-                statement.setDate(2, new java.sql.Date(date.getTime()));
+                statement.setTimestamp(2, new java.sql.Timestamp(date.getTime()));
+                statement.executeUpdate();
             } catch (SQLException e) {
                 Bingo.getInstance().getLogger().severe(e.toString());
             }

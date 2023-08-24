@@ -94,7 +94,7 @@ public class DefaultViewImpl extends AbstractView {
                         clicker.sendMessage(I18n.getStrAndHeader("reward-received"));
                         return;
                     }
-                    if (array[0].stream().allMatch(tempPlayerCache::isCompleted)) {
+                    if (tempPlayerCache.isCompleted(array[0].toArray(new String[0]))) {
                         tempPlayerCache.addReceivedRewardKey(rewardId);
                         array[1].forEach((command) -> {
                             String last = PlaceholderHook.format(clicker, command);

@@ -27,7 +27,7 @@ public class SQLiteDataSourceImpl extends AbstractDataSourceImpl {
         super(DataSourceType.SQLITE, dataSourceConfig);
         String[] array = {
                 "CREATE TABLE IF NOT EXISTS bingo_users (user VARCHAR(36) NOT NULL, data TEXT, locked INT, PRIMARY KEY ( user ));",
-                "CREATE TABLE IF NOT EXISTS bingo_jobs (id INTEGER PRIMARY KEY AUTOINCREMENT, job VARCHAR(100), date DATETIME);"
+                "CREATE TABLE IF NOT EXISTS bingo_jobs (id INTEGER PRIMARY KEY AUTOINCREMENT, job VARCHAR(100), date TIMESTAMP);"
         };
         for (String sql : array) {
             this.connect((s) -> {
@@ -133,7 +133,7 @@ public class SQLiteDataSourceImpl extends AbstractDataSourceImpl {
                 try {
                     ResultSet resultSet = statement.executeQuery();
                     while (resultSet.next()) {
-                        this.jobDateMap.put(resultSet.getString(1), resultSet.getDate(2));
+                        this.jobDateMap.put(resultSet.getString(1), resultSet.getTimestamp(2));
                     }
                     resultSet.close();
                 } catch (SQLException e) {
@@ -148,7 +148,7 @@ public class SQLiteDataSourceImpl extends AbstractDataSourceImpl {
 
                         ResultSet resultSet = statement.executeQuery();
                         while (resultSet.next()) {
-                            this.jobDateMap.put(resultSet.getString(1), resultSet.getDate(2));
+                            this.jobDateMap.put(resultSet.getString(1), resultSet.getTimestamp(2));
                         }
                         resultSet.close();
                     } catch (SQLException e) {
@@ -165,7 +165,8 @@ public class SQLiteDataSourceImpl extends AbstractDataSourceImpl {
         this.connect((statement) -> {
             try {
                 statement.setString(1, jobKey);
-                statement.setDate(2, new java.sql.Date(date.getTime()));
+                statement.setTimestamp(2, new java.sql.Timestamp(date.getTime()));
+                statement.executeUpdate();
             } catch (SQLException e) {
                 Bingo.getInstance().getLogger().severe(e.toString());
             }
