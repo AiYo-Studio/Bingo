@@ -82,7 +82,9 @@ public class DefaultViewImpl extends AbstractView {
                     if (viewId.equals(viewCache.getViewId())) {
                         return;
                     }
-                    this.open();
+                    if (CacheManager.hasViewCache(viewId)) {
+                        AbstractView.create(player, CacheManager.getViewCache(viewId)).open();
+                    }
                 } else if (nbtItem.hasTag("BingoQuestReward")) {
                     String rewardId = nbtItem.getString("BingoQuestReward");
                     if (!this.stateMap.containsKey(rewardId)) {
@@ -130,15 +132,16 @@ public class DefaultViewImpl extends AbstractView {
             }
             itemMeta.setLore(lore);
             itemStack.setItemMeta(itemMeta);
-            if (config.contains("view")) {
-                NBTItem nbtItem = new NBTItem(itemStack);
-                nbtItem.setString("BingoView", config.getString("view"));
-                if (config.contains("nbt")) {
-                    ReadWriteNBT compound = NBT.parseNBT(config.getString("nbt"));
-                    nbtItem.mergeCompound(compound);
-                }
-                itemStack = nbtItem.getItem();
+
+            NBTItem nbtItem = new NBTItem(itemStack);
+            if (config.contains("nbt")) {
+                ReadWriteNBT compound = NBT.parseNBT(config.getString("nbt"));
+                nbtItem.mergeCompound(compound);
             }
+            if (config.contains("view")) {
+                nbtItem.setString("BingoView", config.getString("view"));
+            }
+            itemStack = nbtItem.getItem();
             for (int slot : CommonUtil.formatSlots(config.getString("slot"))) {
                 this.getModel().setItem(slot, itemStack);
             }
