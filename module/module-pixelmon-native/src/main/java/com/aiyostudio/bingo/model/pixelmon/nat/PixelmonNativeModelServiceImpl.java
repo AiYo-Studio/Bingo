@@ -12,7 +12,7 @@ public class PixelmonNativeModelServiceImpl implements IModelService {
 
     @Override
     public void run() {
-        if (com.pixelmonmod.pixelmon.Pixelmon.getVersion().startsWith("9")) {
+        if (com.pixelmonmod.pixelmon.Pixelmon.getVersion().startsWith("9.1")) {
             ForgeListener.init();
             Bingo.getInstance().getConsoleLogger().log(false, "&e    + &fPixelmonNative: &aON");
         }
