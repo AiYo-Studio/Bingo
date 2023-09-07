@@ -9,7 +9,7 @@ dependencies {
 
     implementation "com.aystudio.core:AyCore:1.0.3-BETA"
     // NBTItem
-    implementation("de.tr7zw:item-nbt-api-plugin:2.11.2")
+    implementation("de.tr7zw:item-nbt-api-plugin:2.11.3")
     // PlaceholderAPI
     implementation('me.clip:placeholderapi:2.10.4')
     // Quartz

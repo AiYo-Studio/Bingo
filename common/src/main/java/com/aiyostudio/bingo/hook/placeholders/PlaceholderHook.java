@@ -4,6 +4,7 @@ import com.aiyostudio.bingo.Bingo;
 import com.aiyostudio.bingo.cacheframework.cache.GroupCache;
 import com.aiyostudio.bingo.cacheframework.cache.PlayerCache;
 import com.aiyostudio.bingo.cacheframework.manager.CacheManager;
+import com.aiyostudio.bingo.hook.HookState;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
@@ -21,6 +22,7 @@ public class PlaceholderHook extends PlaceholderExpansion {
 
     public PlaceholderHook() {
         instance = this;
+        HookState.placeholderApi = true;
 
         PlaceholderHook.PLACEHOLDER_INTERFACE_MAP.put("quest_progress", (p, v) -> {
             if (p != null && CacheManager.hasPlayerCache(p.getUniqueId())) {

@@ -1,5 +1,7 @@
 # 语言文件
 language: zh_CN
+# JavScriptEngine
+script-engine: "JavaScript"
 # 存储设定
 data-option:
   # 存储类型, 支持: MySQL, SQLite, YAML
