@@ -14,6 +14,7 @@ import com.aiyostudio.bingo.listen.PlayerListener;
 import com.aiyostudio.bingo.listen.QuestTriggerListener;
 import com.aiyostudio.bingo.service.IModelService;
 import com.aiyostudio.bingo.task.UnlockGroupTask;
+import com.aiyostudio.bingo.util.ScriptUtil;
 import com.aystudio.core.bukkit.plugin.AyPlugin;
 import org.bukkit.Bukkit;
 import org.quartz.SchedulerException;
@@ -94,6 +95,8 @@ public class Bingo extends AyPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
         Bukkit.getPluginManager().registerEvents(new QuestTriggerListener(), this);
         Bukkit.getPluginManager().registerEvents(new BingoListener(), this);
+
+        ScriptUtil.initScriptEngine();
     }
 
     private void initializeServices() {

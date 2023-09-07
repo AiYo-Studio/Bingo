@@ -12,9 +12,16 @@ import java.util.List;
  * @author Blank038
  */
 public class ScriptUtil {
-    private static final ScriptEngine SCRIPT_ENGINE = new ScriptEngineManager().getEngineByName("JavaScript");
+    private static ScriptEngine scriptEngine;
+
+    public static void initScriptEngine() {
+        scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
+    }
 
     public static boolean detectionCondition(Player player, List<String> conditions) {
+        if (scriptEngine == null) {
+            return false;
+        }
         if (conditions.isEmpty()) {
             return true;
         }
@@ -27,7 +34,7 @@ public class ScriptUtil {
                     stringBuilder.append(conditions.get(i)).append(" && ");
                 }
             }
-            return (boolean) SCRIPT_ENGINE.eval(PlaceholderHook.format(player, stringBuilder.toString()));
+            return (boolean) scriptEngine.eval(PlaceholderHook.format(player, stringBuilder.toString()));
         } catch (Exception e) {
             Bingo.getInstance().getLogger().severe(" Condition is invalid " + e);
             return false;
