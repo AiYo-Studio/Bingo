@@ -15,11 +15,12 @@ public class ScriptUtil {
     private static ScriptEngine scriptEngine;
 
     public static void initScriptEngine() {
-        scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
+        scriptEngine = new ScriptEngineManager().getEngineByName("Nashorn");
     }
 
     public static boolean detectionCondition(Player player, List<String> conditions) {
         if (scriptEngine == null) {
+            Bingo.getInstance().getLogger().warning("Cannot invoke 'ScriptUtil.detectionCondition', beacuse 'ScriptUtil.scriptEngine' is null");
             return false;
         }
         if (conditions.isEmpty()) {
