@@ -59,6 +59,11 @@ public class Bingo extends AyPlugin {
         this.getConsoleLogger().log(false, " ");
     }
 
+    @Override
+    public void onDisable() {
+        CacheManager.saveAllPlayerCache();
+    }
+
     public void loadConfig() {
         DefaultConfig.initialize();
 
@@ -124,6 +129,7 @@ public class Bingo extends AyPlugin {
 
     private void runTasks() {
         Bukkit.getScheduler().runTaskTimer(this, new UnlockGroupTask(), 60L, 60L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, CacheManager::saveAllPlayerCache, 200L, 200L);
     }
 
     public static Bingo getInstance() {

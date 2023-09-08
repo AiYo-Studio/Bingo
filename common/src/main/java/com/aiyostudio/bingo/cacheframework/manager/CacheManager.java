@@ -4,6 +4,7 @@ import com.aiyostudio.bingo.Bingo;
 import com.aiyostudio.bingo.cacheframework.cache.*;
 import com.aiyostudio.bingo.cron.CronJob;
 import com.aiyostudio.bingo.dao.IDataSource;
+import com.aiyostudio.bingo.hook.HookState;
 import com.aiyostudio.bingo.util.TextUtil;
 import com.aystudio.core.bukkit.interfaces.CustomExecute;
 import de.tr7zw.nbtapi.utils.MinecraftVersion;
@@ -15,6 +16,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -233,5 +235,20 @@ public class CacheManager {
 
     public static Map<String, JobCache> getJobCacheMap() {
         return CacheManager.JOB_CACHE_MAP;
+    }
+
+    public static void saveAllPlayerCache() {
+        if (HookState.onSave) {
+            return;
+        }
+        HookState.onSave = true;
+        try {
+            Iterator<Map.Entry<UUID, PlayerCache>> iterator = CacheManager.getAllPlayerCaches().entrySet().iterator();
+            while (iterator.hasNext()) {
+                CacheManager.getDataSource().save(iterator.next().getValue(), 1);
+            }
+        } finally {
+            HookState.onSave = false;
+        }
     }
 }

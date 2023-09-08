@@ -103,7 +103,6 @@ public class PlayerCache {
                             }
                             String questKey = quests.remove((int) (Math.random() * quests.size()));
                             this.resetQuestProgress(questKey, true);
-                            System.out.println(questKey);
                             count--;
                         }
                         break;
