@@ -50,22 +50,32 @@ public class BingoCommand implements CommandExecutor {
     }
 
     private void view(CommandSender sender, String[] args) {
-        if (sender instanceof Player && args.length > 1) {
-            Player player = (Player) sender;
-            if (!CacheManager.hasViewCache(args[1])) {
-                player.sendMessage(I18n.getStrAndHeader("view-not-found"));
-                return;
-            }
-            if (!CacheManager.hasPlayerCache(player.getUniqueId())) {
-                player.sendMessage(I18n.getStrAndHeader("data-not-load"));
-                return;
-            }
-            ViewCache viewCache = CacheManager.getViewCache(args[1]);
-            if (viewCache == null) {
-                return;
-            }
-            AbstractView.create(player, viewCache).open();
+        if (args.length == 1) {
+            return;
         }
+        if (!CacheManager.hasViewCache(args[1])) {
+            sender.sendMessage(I18n.getStrAndHeader("view-not-found"));
+            return;
+        }
+        Player target = null;
+        if (args.length > 2 && sender.hasPermission("bingo.admin.view.other")) {
+            target = Bukkit.getPlayerExact(args[2]);
+        } else if (sender instanceof Player) {
+            target = (Player) sender;
+        }
+        if (target == null) {
+            sender.sendMessage(I18n.getStrAndHeader("pls-enter-player-name"));
+            return;
+        }
+        if (!CacheManager.hasPlayerCache(target.getUniqueId())) {
+            sender.sendMessage(I18n.getStrAndHeader("data-not-load"));
+            return;
+        }
+        ViewCache viewCache = CacheManager.getViewCache(args[1]);
+        if (viewCache == null) {
+            return;
+        }
+        AbstractView.create(target, viewCache).open();
     }
 
     private void reload(CommandSender sender) {
