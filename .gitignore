@@ -22,3 +22,5 @@ eclipse
 run
 
 release
+
+release.sh
