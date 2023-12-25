@@ -104,9 +104,6 @@ public class EventConsumerContainer {
      */
     public static final Consumer<EvolveEvent.Post> EVOLVE_POST = (event) -> {
         Player player = Bukkit.getPlayer(event.getPlayer().getUUID());
-        if (event.getEntity() == null) {
-            return;
-        }
         BingoApi.submit(player, "poke_post_evolve", event.getPokemon().getSpecies().getName(), 1);
     };
     /**
