@@ -43,15 +43,13 @@ public class DefaultViewImpl extends AbstractView {
 
     @Override
     public void call() {
-    }
-
-    @Override
-    public void open() {
-        if (checkRequireQuests && viewCache.getRequireQuests().stream().anyMatch(s -> !playerCache.hasQuest(s))) {
-            player.sendMessage(I18n.getStrAndHeader("view-locked"));
-            return;
-        }
-        super.open();
+        this.prerequisites = () -> {
+            if (checkRequireQuests && viewCache.getRequireQuests().stream().anyMatch(s -> !playerCache.hasQuest(s))) {
+                player.sendMessage(I18n.getStrAndHeader("view-locked"));
+                return false;
+            }
+            return true;
+        };
     }
 
     @Override

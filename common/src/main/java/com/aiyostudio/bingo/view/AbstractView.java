@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 
 /**
@@ -23,6 +25,7 @@ public abstract class AbstractView implements IView {
     protected final Player player;
     protected final ViewCache viewCache;
     protected final PlayerCache playerCache;
+    protected Supplier<Boolean> prerequisites;
     protected GuiModel model;
 
     public AbstractView(Player player, ViewCache viewCache) {
@@ -33,6 +36,9 @@ public abstract class AbstractView implements IView {
     }
 
     public void open() {
+        if (prerequisites != null && !prerequisites.get()) {
+            return;
+        }
         if (!ScriptUtil.detectionCondition(player, this.viewCache.getAlwaysCondition())) {
             this.player.sendMessage("view-condition-denied");
             return;
