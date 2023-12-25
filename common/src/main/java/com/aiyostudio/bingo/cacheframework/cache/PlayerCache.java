@@ -78,7 +78,7 @@ public class PlayerCache {
         IDataSource dataSource = CacheManager.getDataSource();
         CacheManager.getJobCacheMap().forEach((k, v) -> {
             Date date = dataSource.getJobResetDate(k);
-            if (date == null) {
+            if (date == null && !v.isNullableReset()) {
                 return;
             }
             String formatDate = CommonUtil.formatDate(date);
@@ -247,6 +247,7 @@ public class PlayerCache {
     public static class QuestProgressCache {
         private final Map<String, ProgressEntry> progressEntryMap = new HashMap<>();
         private final String questId;
+        @Setter
         private QuestStatus questStatus;
 
         public QuestProgressCache(String questId) {
@@ -300,10 +301,6 @@ public class PlayerCache {
                 return true;
             }
             return false;
-        }
-
-        public void setQuestStatus(QuestStatus questStatus) {
-            this.questStatus = questStatus;
         }
 
         public ConfigurationSection toSection() {

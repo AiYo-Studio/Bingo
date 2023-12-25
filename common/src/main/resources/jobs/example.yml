@@ -5,4 +5,7 @@ quests: ""
 segmentRewards: ""
 # 当前只有 NORMAL, RANDOM
 type: NORMAL
-#random: 1 # 随机任务数, 当 type 为 RANDOM 时, 此处生效.
+# 随机任务数, 当 type 为 RANDOM 时, 此处生效.
+random: 0
+# 开启后, 当数据中查找不到此事务上次重置时间, 则进行重置任务, 请根据需求来
+nullableReset: false

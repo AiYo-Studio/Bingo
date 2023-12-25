@@ -15,10 +15,7 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author AiYo Studio
@@ -150,7 +147,7 @@ public class CacheManager {
                     .withIdentity(key + "Trigger", "bingoTriggerGroup")
                     .withSchedule(CronScheduleBuilder.cronSchedule(data.getString("expression")))
                     .build();
-            scheduler.scheduleJob(jobDetail, trigger);
+           scheduler.scheduleJob(jobDetail, trigger);
         }
 
         if (!scheduler.isStarted()) {

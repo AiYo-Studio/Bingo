@@ -17,6 +17,7 @@ public class JobCache {
     private final List<String> questList, segmentRewards;
     private final JobType jobType;
     private final int random;
+    private final boolean nullableReset;
 
     public JobCache(FileConfiguration data) {
         this.jobType = JobType.valueOf(data.getString("type").toUpperCase());
@@ -24,5 +25,6 @@ public class JobCache {
         this.questList = Lists.newArrayList(data.getString("quests").split(","));
         this.segmentRewards = Lists.newArrayList(data.getString("segmentRewards").split(","));
         this.random = data.getInt("random");
+        this.nullableReset = data.getBoolean("nullableReset", false);
     }
 }
