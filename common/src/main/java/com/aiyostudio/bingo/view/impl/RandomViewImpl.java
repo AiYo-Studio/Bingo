@@ -41,8 +41,6 @@ public class RandomViewImpl extends DefaultViewImpl {
            int requireCount = this.getViewCache().getRequireCount();
            if ((requireCount == -1 && this.quests.stream().allMatch(this.playerCache::hasQuest))
                    || (requireCount > -1 && this.quests.stream().filter(this.playerCache::hasQuest).count() >= requireCount)) {
-               this.checkRequireQuests = false;
-               super.open();
                return true;
            } else {
                player.sendMessage(I18n.getStrAndHeader("view-locked"));

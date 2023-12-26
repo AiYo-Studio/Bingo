@@ -35,7 +35,6 @@ import java.util.Map;
  */
 public class DefaultViewImpl extends AbstractView {
     private Map<String, List<String>[]> stateMap;
-    protected boolean checkRequireQuests = true;
 
     public DefaultViewImpl(Player player, ViewCache viewCache) {
         super(player, viewCache);
@@ -44,7 +43,7 @@ public class DefaultViewImpl extends AbstractView {
     @Override
     public void call() {
         this.prerequisites = () -> {
-            if (checkRequireQuests && viewCache.getRequireQuests().stream().anyMatch(s -> !playerCache.hasQuest(s))) {
+            if (viewCache.getRequireQuests().stream().anyMatch(s -> !playerCache.hasQuest(s))) {
                 player.sendMessage(I18n.getStrAndHeader("view-locked"));
                 return false;
             }
@@ -54,11 +53,6 @@ public class DefaultViewImpl extends AbstractView {
 
     @Override
     public void onPreInit() {
-        PlayerCache playerCache = CacheManager.getPlayerCache(player.getUniqueId());
-        if (viewCache.getRequireQuests().stream().anyMatch(s -> !playerCache.hasQuest(s))) {
-            player.sendMessage(I18n.getStrAndHeader("view-locked"));
-            return;
-        }
         this.initializeDisplayItem();
         this.initializeQuestItem();
         this.stateMap = this.initializeStateItem();
