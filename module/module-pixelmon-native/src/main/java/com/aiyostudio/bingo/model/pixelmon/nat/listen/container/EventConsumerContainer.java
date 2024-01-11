@@ -4,6 +4,7 @@ import com.aiyostudio.bingo.api.BingoApi;
 import com.pixelmonmod.pixelmon.api.events.*;
 import com.pixelmonmod.pixelmon.api.events.pokemon.EVsGainedEvent;
 import com.pixelmonmod.pixelmon.api.events.pokemon.SetNicknameEvent;
+import net.minecraft.entity.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -48,7 +49,14 @@ public class EventConsumerContainer {
      */
     public static final Consumer<FishingEvent.Catch> FISHING_CATCH = (event) -> {
         Player player = Bukkit.getPlayer(event.player.getUUID());
-        BingoApi.submit(player, "fishing_catch", event.plannedSpawn.getOrCreateEntity().getName().getString(), 1);
+        if (event.plannedSpawn == null) {
+            return;
+        }
+        Entity entity = event.plannedSpawn.getOrCreateEntity();
+        if (entity == null) {
+            return;
+        }
+        BingoApi.submit(player, "fishing_catch", entity.getName().getString(), 1);
     };
     /**
      * 采摘树果
