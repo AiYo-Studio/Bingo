@@ -6,7 +6,7 @@ plugins {
 }
 
 project.ext {
-    ver = "1.3.11-SNAPSHOT"
+    ver = "1.3.12-SNAPSHOT"
 }
 
 dependencies {
@@ -51,7 +51,6 @@ allprojects {
 
     processResources {
         setFilteringCharset("UTF-8")
-        expand project.properties
     }
 
     tasks.withType(JavaCompile) {
