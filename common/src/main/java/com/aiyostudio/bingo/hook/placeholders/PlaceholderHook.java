@@ -11,13 +11,14 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 /**
  * @author AiYo Studio
  * @since 1.0.0 - Blank038 - 2023-07-23
  */
 public class PlaceholderHook extends PlaceholderExpansion {
-    private static final Map<String, PlaceholderInterface<Player, String>> PLACEHOLDER_INTERFACE_MAP = new HashMap<>();
+    private static final Map<String, BiFunction<Player, String, String>> PLACEHOLDER_INTERFACE_MAP = new HashMap<>();
     private static PlaceholderHook instance;
 
     public PlaceholderHook() {
@@ -52,7 +53,7 @@ public class PlaceholderHook extends PlaceholderExpansion {
         int index = params.lastIndexOf('_');
         String param = params.substring(0, index);
         if (PlaceholderHook.PLACEHOLDER_INTERFACE_MAP.containsKey(param)) {
-            return PlaceholderHook.PLACEHOLDER_INTERFACE_MAP.get(param).run(p, params.substring(index + 1));
+            return PlaceholderHook.PLACEHOLDER_INTERFACE_MAP.get(param).apply(p, params.substring(index + 1));
         }
         return "";
     }
@@ -82,11 +83,5 @@ public class PlaceholderHook extends PlaceholderExpansion {
             return line;
         }
         return PlaceholderAPI.setPlaceholders(target, line);
-    }
-
-    @FunctionalInterface
-    public interface PlaceholderInterface<T, V> {
-
-        String run(T p, V v);
     }
 }
