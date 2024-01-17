@@ -287,7 +287,12 @@ public class PlayerCache {
         public void addProgress(String type, String condition, int count) {
             for (Map.Entry<String, ProgressEntry> entry : this.progressEntryMap.entrySet()) {
                 ProgressEntry progressEntry = entry.getValue();
-                if (progressEntry.getType().equals(type) && ("*".equals(condition) || condition.equals(progressEntry.getCondition()) || "*".equals(progressEntry.getCondition()))) {
+                if (!progressEntry.getType().equals(type)) {
+                    continue;
+                }
+                // check condition
+                if ("*".equals(condition) || condition.equals(progressEntry.getCondition())
+                        || "*".equals(progressEntry.getCondition()) || condition.matches(progressEntry.getCondition())) {
                     progressEntry.setValue(progressEntry.getValue() + count);
                 }
             }
