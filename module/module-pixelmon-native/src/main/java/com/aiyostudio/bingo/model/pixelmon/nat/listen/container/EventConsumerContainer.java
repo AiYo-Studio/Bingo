@@ -4,6 +4,9 @@ import com.aiyostudio.bingo.api.BingoApi;
 import com.pixelmonmod.pixelmon.api.events.*;
 import com.pixelmonmod.pixelmon.api.events.pokemon.EVsGainedEvent;
 import com.pixelmonmod.pixelmon.api.events.pokemon.SetNicknameEvent;
+import com.pixelmonmod.pixelmon.api.events.quests.FinishQuestEvent;
+import com.pixelmonmod.pixelmon.api.events.raids.EndRaidEvent;
+import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
 import net.minecraft.entity.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -22,6 +25,19 @@ public class EventConsumerContainer {
     public static final Consumer<BeatWildPixelmonEvent> BEAT_WILD_PIXELMON = (event) -> {
         Player player = Bukkit.getPlayer(event.player.getUUID());
         BingoApi.submit(player, "beat_wild_pixelmon", event.wpp.allPokemon[0].pokemon.getSpecies().getName(), 1);
+    };
+    /*
+     * 玩家击败巢穴精灵
+     */
+    public static final Consumer<EndRaidEvent> END_RAID_EVENT_CONSUMER = (event) -> {
+        if (event.didRaidersWin()) {
+            event.getAllyParticipants().forEach((participant) -> {
+                if (participant instanceof PlayerParticipant) {
+                    Player player = Bukkit.getPlayer(((PlayerParticipant) participant).player.getUUID());
+                    BingoApi.submit(player, "beat_raid_governor", event.getRaid().getSpecies().getName(), 1);
+                }
+            });
+        }
     };
     /**
      * 捕捉野外精灵
@@ -132,10 +148,17 @@ public class EventConsumerContainer {
         BingoApi.submit(player, "shopkeeper_sell", "none", 1);
     };
     /**
-     * 跟商人购买物品
+     * 激活祭坛
      */
     public static final Consumer<PlayerActivateShrineEvent.Post> ACTIVATE_SHRINE = (event) -> {
         Player player = Bukkit.getPlayer(event.getPlayer().getUUID());
-        BingoApi.submit(player, "ACTIVATE_SHRINE", event.getShrineType().name(), 1);
+        BingoApi.submit(player, "activate_shrine", event.getShrineType().name(), 1);
+    };
+    /**
+     * 玩家完成任务时
+     */
+    public static final Consumer<FinishQuestEvent.Complete> QUEST_COMPLETE = (event) -> {
+        Player player = Bukkit.getPlayer(event.player.getUUID());
+        BingoApi.submit(player, "quest_complete", event.progress.getQuest().getIdentityName(), 1);
     };
 }
