@@ -198,12 +198,20 @@ public class CacheManager {
         return CacheManager.QUEST_CACHE_MAP.containsKey(questId);
     }
 
+    public static Map<String, QuestCache> getQuestCaches() {
+        return QUEST_CACHE_MAP;
+    }
+
     public static boolean hasViewCache(String viewKey) {
         return CacheManager.VIEW_CACHE_MAP.containsKey(viewKey);
     }
 
     public static ViewCache getViewCache(String viewKey) {
         return CacheManager.VIEW_CACHE_MAP.getOrDefault(viewKey, null);
+    }
+
+    public static Map<String, ViewCache> getViewCaches() {
+        return VIEW_CACHE_MAP;
     }
 
     public static boolean hasGroupCache(String groupId) {

@@ -13,6 +13,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Date;
+
 /**
  * @author AiYo Studio
  * @since 1.0.0 - Blank038 - 2023-07-22
@@ -25,7 +27,7 @@ public class BingoCommand implements CommandExecutor {
         if (args.length == 0) {
             this.help(sender, label);
         } else {
-            switch (args[0]) {
+            switch (args[0].toLowerCase()) {
                 case "view":
                     this.view(sender, args);
                     break;
@@ -34,6 +36,9 @@ public class BingoCommand implements CommandExecutor {
                     break;
                 case "edit":
                     this.edit(sender, args);
+                    break;
+                case "updatejob":
+                    this.updateJob(sender, args);
                     break;
                 default:
                     break;
@@ -146,5 +151,21 @@ public class BingoCommand implements CommandExecutor {
             default:
                 break;
         }
+    }
+
+    private void updateJob(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("bingo.admin")) {
+            return;
+        }
+        if (args.length == 1) {
+            sender.sendMessage(I18n.getStrAndHeader("pls-enter-job-id"));
+            return;
+        }
+        if (!CacheManager.getJobCacheMap().containsKey(args[1])) {
+            sender.sendMessage(I18n.getStrAndHeader("job-not-found"));
+            return;
+        }
+        CacheManager.getDataSource().resetJobCache(args[1], new Date(System.currentTimeMillis()));
+        sender.sendMessage(I18n.getStrAndHeader("job-reset"));
     }
 }

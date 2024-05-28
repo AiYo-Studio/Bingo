@@ -56,6 +56,13 @@ public class Bingo extends AyPlugin {
         this.registerHookPlugins();
         this.runTasks();
 
+        this.getConsoleLogger().log(false, "&b  * &f加载数据列表");
+        this.getConsoleLogger().log(false, "&e    + &f任务数: &a" + CacheManager.getQuestCaches().size());
+        this.getConsoleLogger().log(false, "&e    + &f事务数: &a" + CacheManager.getJobCacheMap().size());
+        this.getConsoleLogger().log(false, "&e    + &f视图数: &a" + CacheManager.getViewCaches().size());
+        this.getConsoleLogger().log(false, "&e    + &f任务组数: &a" + CacheManager.getAllGroup().size());
+
+
         this.getConsoleLogger().log(false, " ");
     }
 

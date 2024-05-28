@@ -16,6 +16,7 @@ help:
     - "&f   当前可用类型"
     - "&8     * &7resetGroup 值为组编号"
     - "&8     * &7resetQuest 值为任务编号"
+    - "&a /%c updateJob <编号> &f- 手动重置 Job 时间"
     - "&a /%c reload &f- 重载插件配置文件"
     - ""
 
@@ -25,14 +26,17 @@ pulling-completed: "数据已经加载完成."
 pls-enter-player-name: "请输入玩家名."
 pls-enter-edit-type: "请输入编辑类型."
 pls-enter-edit-value: "请输入编辑值."
+pls-enter-job-id: "请输入事务编号."
 wrong-type: "错误的类型."
 
 error-edit: "编辑失败."
 edit-complete: "编辑完成."
+job-reset: "成功刷新事务时间."
 
 view-not-found: "未找到可视化面板."
 data-not-load: "数据还未加载完成."
 player-offline: "玩家不在线."
+job-not-found: "未找到事务."
 
 reward-received: "该奖励你已领过."
 gotten-reward: "成功领取奖励."
