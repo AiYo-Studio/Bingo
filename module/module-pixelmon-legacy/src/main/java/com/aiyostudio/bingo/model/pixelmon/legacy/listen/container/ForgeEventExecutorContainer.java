@@ -7,6 +7,7 @@ import com.pixelmonmod.pixelmon.api.events.pokemon.SetNicknameEvent;
 import com.pixelmonmod.pixelmon.api.events.quests.FinishQuestEvent;
 import com.pixelmonmod.pixelmon.api.events.raids.EndRaidEvent;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
+import com.pixelmonmod.pixelmon.enums.EnumSpecies;
 import net.minecraft.entity.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -19,12 +20,25 @@ import java.util.function.Consumer;
  * @since 1.0.0 - Blank038 - 2023-07-23
  */
 public class ForgeEventExecutorContainer {
+
+    private static void submitCustomQuestByType(Player player, String prefix, EnumSpecies species) {
+        // 判定是否为神兽
+        if (species.isLegendary()) {
+            BingoApi.submit(player, prefix + "_type", "legendary", 1);
+        } else if (species.isUltraBeast()) {
+            BingoApi.submit(player, prefix + "_type", "ultrabeast", 1);
+        }
+    }
+
     /**
      * 玩家击败野生精灵
      */
     public static final Consumer<BeatWildPixelmonEvent> BEAT_WILD_PIXELMON = (event) -> {
         Player player = Bukkit.getPlayer(event.player.getUniqueID());
-        BingoApi.submit(player, "beat_wild_pixelmon", event.wpp.allPokemon[0].pokemon.getSpecies().name(), 1);
+        EnumSpecies species = event.wpp.allPokemon[0].pokemon.getSpecies();
+        // 提交击败任务
+        BingoApi.submit(player, "beat_wild_pixelmon", species.name(), 1);
+        submitCustomQuestByType(player, "beat_wild_pixelmon", species);
     };
     /*
      * 玩家击败巢穴精灵
@@ -34,7 +48,9 @@ public class ForgeEventExecutorContainer {
             event.getAllyParticipants().forEach((participant) -> {
                 if (participant instanceof PlayerParticipant) {
                     Player player = Bukkit.getPlayer((((PlayerParticipant) participant).player.getUniqueID()));
-                    BingoApi.submit(player, "beat_raid_governor", event.getRaid().getSpecies().name(), 1);
+                    EnumSpecies species = event.getRaid().getSpecies();
+                    BingoApi.submit(player, "beat_raid_governor", species.name(), 1);
+                    submitCustomQuestByType(player, "beat_raid_governor", species);
                 }
             });
         }
@@ -44,14 +60,18 @@ public class ForgeEventExecutorContainer {
      */
     public static final Consumer<CaptureEvent.SuccessfulCapture> CAPTURE_PIXELMON = (event) -> {
         Player player = Bukkit.getPlayer(event.player.getUniqueID());
-        BingoApi.submit(player, "capture_pixelmon", event.getPokemon().getSpecies().name(), 1);
+        EnumSpecies species = event.getPokemon().getSpecies();
+        BingoApi.submit(player, "capture_pixelmon", species.name(), 1);
+        submitCustomQuestByType(player, "capture_pixelmon", species);
     };
     /**
      * 捕捉巢穴精灵
      */
     public static final Consumer<CaptureEvent.SuccessfulRaidCapture> CAPTURE_RAID_PIXELMON = (event) -> {
         Player player = Bukkit.getPlayer(event.player.getUniqueID());
-        BingoApi.submit(player, "capture_raid_pixelmon", event.getRaidPokemon().getSpecies().name(), 1);
+        EnumSpecies species = event.getRaidPokemon().getSpecies();
+        BingoApi.submit(player, "capture_raid_pixelmon", species.name(), 1);
+        submitCustomQuestByType(player, "capture_raid_pixelmon", species);
     };
     /**
      * 击败训练师
