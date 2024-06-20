@@ -21,9 +21,11 @@ shadowJar {
 
     relocate 'org.quartz', 'org.bingo.quartz'
     relocate 'org.terracotta', 'org.bingo.terracotta'
+    relocate 'org.slf4j', 'org.bingo.slf4j'
 
     dependencies {
         include(dependency("org.quartz-scheduler:quartz:2.3.2"))
+        include(dependency("org.slf4j:slf4j-api:1.7.21"))
     }
 }
 
