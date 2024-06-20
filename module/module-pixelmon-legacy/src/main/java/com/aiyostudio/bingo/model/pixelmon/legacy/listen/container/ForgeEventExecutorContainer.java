@@ -119,8 +119,11 @@ public class ForgeEventExecutorContainer {
      */
     public static final Consumer<ExperienceGainEvent> EXPERIENCE_GAIN = (event) -> {
         if (event.pokemon.getPokemon().getOwnerPlayer() != null) {
+            if (event.pokemon.getPokemon().getSpecies() == null) {
+                return;
+            }
             Player player = Bukkit.getPlayer(event.pokemon.getPokemon().getOwnerPlayerUUID());
-            BingoApi.submit(player, "experience_gain", event.pokemon.getSpecies().name(), event.getExperience());
+            BingoApi.submit(player, "experience_gain", event.pokemon.getPokemon().getSpecies().name(), event.getExperience());
         }
     };
     /**
