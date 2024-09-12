@@ -4,6 +4,7 @@ import com.aiyostudio.bingo.Bingo;
 import com.aiyostudio.bingo.cacheframework.cache.PlayerCache;
 import com.aiyostudio.bingo.cacheframework.cache.ViewCache;
 import com.aiyostudio.bingo.cacheframework.manager.CacheManager;
+import com.aiyostudio.bingo.i18n.I18n;
 import com.aiyostudio.bingo.registries.ViewRegistry;
 import com.aiyostudio.bingo.util.ScriptUtil;
 import com.aystudio.core.bukkit.util.inventory.GuiModel;
@@ -40,7 +41,7 @@ public abstract class AbstractView implements IView {
             return;
         }
         if (!ScriptUtil.detectionCondition(player, this.viewCache.getAlwaysCondition())) {
-            this.player.sendMessage("view-condition-denied");
+            this.player.sendMessage(I18n.getOption("view-condition-denied"));
             return;
         }
         this.model = new GuiModel(viewCache.getViewTitle(), viewCache.getViewSize());
