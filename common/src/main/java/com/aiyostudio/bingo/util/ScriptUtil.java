@@ -2,10 +2,11 @@ package com.aiyostudio.bingo.util;
 
 import com.aiyostudio.bingo.Bingo;
 import com.aiyostudio.bingo.config.DefaultConfig;
-import com.aiyostudio.bingo.hook.HookState;
-import com.aiyostudio.bingo.hook.placeholders.PlaceholderHook;
+import com.aiyostudio.bingo.handler.format.Formatter;
 import de.tr7zw.nbtapi.utils.MinecraftVersion;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
@@ -29,16 +30,22 @@ public class ScriptUtil {
                 Bingo.getInstance().getLogger().warning("not found the Nashorn ScriptEngine");
             }
         }
+        if (scriptEngine == null) {
+            RegisteredServiceProvider<ScriptEngineManager> provider = Bukkit.getServicesManager().getRegistration(ScriptEngineManager.class);
+            if (provider != null && provider.getProvider() != null) {
+                scriptEngineManager = provider.getProvider();
+            }
+        }
         scriptEngine = scriptEngineManager.getEngineByName(engineName);
     }
 
     public static boolean detectionCondition(Player player, List<String> conditions) {
+        if (conditions.isEmpty()) {
+            return true;
+        }
         if (scriptEngine == null) {
             Bingo.getInstance().getLogger().warning("Cannot invoke 'ScriptUtil.detectionCondition', beacuse 'ScriptUtil.scriptEngine' is null");
             return false;
-        }
-        if (conditions.isEmpty()) {
-            return true;
         }
         try {
             StringBuilder stringBuilder = new StringBuilder();
@@ -49,7 +56,7 @@ public class ScriptUtil {
                     stringBuilder.append(conditions.get(i)).append(" && ");
                 }
             }
-            return (boolean) scriptEngine.eval(HookState.placeholderApi ? PlaceholderHook.format(player, stringBuilder.toString()) : stringBuilder.toString());
+            return (boolean) scriptEngine.eval(Formatter.format(player, stringBuilder.toString()));
         } catch (Exception e) {
             Bingo.getInstance().getLogger().severe(" Condition is invalid " + e);
             return false;
