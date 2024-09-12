@@ -4,7 +4,7 @@ import com.aiyostudio.bingo.Bingo;
 import com.aiyostudio.bingo.cacheframework.cache.GroupCache;
 import com.aiyostudio.bingo.cacheframework.cache.PlayerCache;
 import com.aiyostudio.bingo.cacheframework.manager.CacheManager;
-import com.aiyostudio.bingo.hook.HookState;
+import com.aiyostudio.bingo.handler.format.Formatter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
@@ -19,12 +19,11 @@ import java.util.function.BiFunction;
  */
 public class PlaceholderHook extends PlaceholderExpansion {
     private static final Map<String, BiFunction<Player, String, String>> PLACEHOLDER_INTERFACE_MAP = new HashMap<>();
-    private static PlaceholderHook instance;
 
     public PlaceholderHook() {
-        instance = this;
-        HookState.placeholderApi = true;
-
+        // Register formatter
+        Formatter.register("placeholder", PlaceholderAPI::setPlaceholders);
+        // Add placeholder process function
         PlaceholderHook.PLACEHOLDER_INTERFACE_MAP.put("quest_progress", (p, v) -> {
             if (p != null && CacheManager.hasPlayerCache(p.getUniqueId())) {
                 int value = (int) (CacheManager.getPlayerCache(p.getUniqueId()).getQuestProgressPct(v) * 100.0);
@@ -76,12 +75,5 @@ public class PlaceholderHook extends PlaceholderExpansion {
     @Override
     public boolean persist() {
         return true;
-    }
-
-    public static String format(Player target, String line) {
-        if (instance == null) {
-            return line;
-        }
-        return PlaceholderAPI.setPlaceholders(target, line);
     }
 }

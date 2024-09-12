@@ -5,7 +5,7 @@ import com.aiyostudio.bingo.cacheframework.cache.QuestCache;
 import com.aiyostudio.bingo.cacheframework.cache.ViewCache;
 import com.aiyostudio.bingo.cacheframework.manager.CacheManager;
 import com.aiyostudio.bingo.config.DefaultConfig;
-import com.aiyostudio.bingo.hook.placeholders.PlaceholderHook;
+import com.aiyostudio.bingo.handler.format.Formatter;
 import com.aiyostudio.bingo.i18n.I18n;
 import com.aiyostudio.bingo.util.TextUtil;
 import com.aiyostudio.bingo.view.AbstractView;
@@ -91,7 +91,7 @@ public class DefaultViewImpl extends AbstractView {
                     if (tempPlayerCache.isCompleted(array[0].toArray(new String[0]))) {
                         tempPlayerCache.addReceivedRewardKey(rewardId);
                         array[1].forEach((command) -> {
-                            String last = PlaceholderHook.format(clicker, command);
+                            String last = Formatter.format(clicker, command);
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), last.replace("%player%", clicker.getName()));
                         });
                         clicker.sendMessage(I18n.getStrAndHeader("gotten-reward"));
@@ -120,7 +120,7 @@ public class DefaultViewImpl extends AbstractView {
             itemMeta.setDisplayName(TextUtil.formatHexColor(config.getString("name")));
             List<String> lore = new ArrayList<>();
             for (String line : config.getStringList("lore")) {
-                lore.add(TextUtil.formatHexColor(PlaceholderHook.format(this.getPlayer(), line)));
+                lore.add(TextUtil.formatHexColor(Formatter.format(this.getPlayer(), line)));
             }
             itemMeta.setLore(lore);
             itemStack.setItemMeta(itemMeta);
@@ -182,7 +182,7 @@ public class DefaultViewImpl extends AbstractView {
                     lore.add(line);
                 }
             }
-            lore.replaceAll((s) -> TextUtil.formatHexColor(PlaceholderHook.format(this.player, s))
+            lore.replaceAll((s) -> TextUtil.formatHexColor(Formatter.format(this.player, s))
                     .replace("%questName%", questName)
                     .replace("%progress%", progress)
                     .replace("%pct%", String.valueOf(pctInt)));
@@ -231,7 +231,7 @@ public class DefaultViewImpl extends AbstractView {
             itemMeta.setDisplayName(TextUtil.formatHexColor(config.getString("name")));
             List<String> lore = new ArrayList<>();
             for (String line : config.getStringList("lore")) {
-                lore.add(TextUtil.formatHexColor(PlaceholderHook.format(this.player, line)));
+                lore.add(TextUtil.formatHexColor(Formatter.format(this.player, line)));
             }
             itemMeta.setLore(lore);
             itemStack.setItemMeta(itemMeta);

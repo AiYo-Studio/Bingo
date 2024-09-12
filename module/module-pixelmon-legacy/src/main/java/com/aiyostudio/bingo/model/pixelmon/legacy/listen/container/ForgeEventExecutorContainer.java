@@ -184,4 +184,18 @@ public class ForgeEventExecutorContainer {
         Player player = Bukkit.getPlayer(event.player.getUniqueID());
         BingoApi.submit(player, "quest_complete", event.progress.getQuest().getIdentityName(), 1);
     };
+    /**
+     * 玩家繁殖出精灵蛋
+     */
+    public static final Consumer<BreedEvent.MakeEgg> MAKE_EGG = (event) -> {
+        Player player = Bukkit.getPlayer(event.owner);
+        BingoApi.submit(player, "breed_make_egg", event.getEgg().getSpecies().name, 1);
+    };
+    /**
+     * 玩家孵化一颗蛋
+     */
+    public static final Consumer<EggHatchEvent.Post> EGG_HATCH = (event) -> {
+        Player player = Bukkit.getPlayer(event.getPlayer().getUniqueID());
+        BingoApi.submit(player, "egg_hatch", event.getPokemon().getSpecies().name, 1);
+    };
 }

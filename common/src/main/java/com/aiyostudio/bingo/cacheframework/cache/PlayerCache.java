@@ -5,7 +5,7 @@ import com.aiyostudio.bingo.api.event.BingoQuestCompleteEvent;
 import com.aiyostudio.bingo.cacheframework.manager.CacheManager;
 import com.aiyostudio.bingo.dao.IDataSource;
 import com.aiyostudio.bingo.enums.QuestStatus;
-import com.aiyostudio.bingo.hook.placeholders.PlaceholderHook;
+import com.aiyostudio.bingo.handler.format.Formatter;
 import com.aiyostudio.bingo.util.CommonUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -195,7 +195,7 @@ public class PlayerCache {
                     if (!map.isEmpty()) {
                         for (Map.Entry<String, List<String>> entry : map.entrySet()) {
                             entry.getValue().forEach((command) -> {
-                                String last = PlaceholderHook.format(target, command);
+                                String last = Formatter.format(target, command);
                                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), last.replace("%player%", target.getName()));
                             });
                         }
