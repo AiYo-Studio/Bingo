@@ -32,7 +32,7 @@ public class BingoApi {
     public static void submit(Player target, String questType, String condition, int amount) {
         if (Bingo.getInstance().getConfig().getBoolean("quest-trigger-log")) {
             Bingo.getInstance().getLogger().info(String.format("Player: %s, QuestType: %s, Condition: %s, Amount: %s",
-                    target.getName(), questType, condition, amount));
+                    (target == null ? null : target.getName()), questType, condition, amount));
         }
         if (target != null && CacheManager.hasPlayerCache(target.getUniqueId())) {
             CacheManager.getPlayerCache(target.getUniqueId()).addQuestProgress(questType, condition, amount);
