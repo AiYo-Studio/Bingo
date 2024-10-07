@@ -15,15 +15,20 @@ import java.util.Map;
  */
 @Getter
 public class QuestCache {
-    private final String questType, condition, questName;
+    private final String questType, questName;
     private final int amount;
-    private final List<String> appendLore = new ArrayList<>();
+    private final List<String> appendLore = new ArrayList<>(),
+            conditions = new ArrayList<>();
     private final Map<String, List<String>> commands = new HashMap<>();
 
     public QuestCache(ConfigurationSection section) {
         this.questName = TextUtil.formatHexColor(section.getString("name"));
         this.questType = section.getString("type");
-        this.condition = section.getString("condition");
+        if (section.isString("condition")) {
+            this.conditions.add(section.getString("condition"));
+        } else if (section.isList("condition")) {
+            this.conditions.addAll(section.getStringList("condition"));
+        }
         this.amount = section.getInt("amount");
         this.appendLore.addAll(section.getStringList("appendLore"));
         if (section.contains("commands")) {

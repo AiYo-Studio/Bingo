@@ -275,13 +275,15 @@ public class PlayerCache {
             if (questCache == null) {
                 return;
             }
-            String progressKey = questCache.getQuestType() + "-" + questCache.getCondition();
-            if (this.progressEntryMap.isEmpty() || !this.progressEntryMap.containsKey(progressKey)) {
-                this.progressEntryMap.clear();
+            questCache.getConditions().forEach((v) -> {
+                String progressKey = questCache.getQuestType() + "-" + v;
+                if (this.progressEntryMap.isEmpty() || !this.progressEntryMap.containsKey(progressKey)) {
+                    this.progressEntryMap.clear();
 
-                ProgressEntry progressEntry = new ProgressEntry(questCache.getQuestType(), questCache.getCondition(), 0);
-                this.progressEntryMap.put(progressKey, progressEntry);
-            }
+                    ProgressEntry progressEntry = new ProgressEntry(questCache.getQuestType(), v, 0);
+                    this.progressEntryMap.put(progressKey, progressEntry);
+                }
+            });
         }
 
         public void addProgress(String type, String condition, int count) {
@@ -299,13 +301,15 @@ public class PlayerCache {
         }
 
         public boolean check(QuestCache questCache) {
-            String progressId = questCache.getQuestType() + "-" + questCache.getCondition();
-            if (this.getQuestStatus() == QuestStatus.PROGRESS && this.progressEntryMap.containsKey(progressId)
-                    && this.progressEntryMap.get(progressId).getValue() >= questCache.getAmount()) {
+            boolean result = questCache.getConditions().stream().allMatch((v) -> {
+                String progressId = questCache.getQuestType() + "-" + v;
+                return this.getQuestStatus() == QuestStatus.PROGRESS && this.progressEntryMap.containsKey(progressId)
+                        && this.progressEntryMap.get(progressId).getValue() >= questCache.getAmount();
+            });
+            if (result) {
                 this.setQuestStatus(QuestStatus.COMPLETED);
-                return true;
             }
-            return false;
+            return result;
         }
 
         public ConfigurationSection toSection() {
