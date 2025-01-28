@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author AiYo Studio
- * @since 1.0.0 - Blank038 - 2023-07-22
  */
 public class TextUtil {
     private static final Pattern PATTERN = Pattern.compile("#[A-f0-9]{6}");
