@@ -11,6 +11,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @author AiYo Studio
@@ -56,14 +57,14 @@ public class YamlDataSourceImpl extends AbstractDataSourceImpl {
 
     @Override
     public void loadJobResetData(String... keys) {
-        this.jobDateMap.clear();
-
+        if (keys.length == 0) {
+            this.jobDateMap.clear();
+        }
         File file = new File(Bingo.getInstance().getDataFolder() + "/storage/", "jobs");
         if (!file.exists()) {
             file.mkdir();
         }
-
-        for (String key : keys) {
+        Consumer<String> consumer = (key) -> {
             File f = new File(file, key + ".yml");
             if (!f.exists()) {
                 try {
@@ -74,6 +75,15 @@ public class YamlDataSourceImpl extends AbstractDataSourceImpl {
             }
             FileConfiguration data = YamlConfiguration.loadConfiguration(f);
             this.jobDateMap.put(key, new Date(data.getLong("resetDate")));
+        };
+        if (keys.length == 0) {
+            Arrays.stream(file.list())
+                    .map((v) -> v.substring(0, v.length() - 4))
+                    .forEach(consumer);
+        } else {
+            for (String key : keys) {
+                consumer.accept(key);
+            }
         }
     }
 
