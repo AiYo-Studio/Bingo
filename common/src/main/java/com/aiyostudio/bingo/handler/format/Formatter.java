@@ -22,7 +22,7 @@ public class Formatter {
             Matcher matcher = RANDOM_AMOUNT.matcher(s);
             while (matcher.find()) {
                 String group = matcher.group();
-                String[] arr = group.substring(2, group.length() - 1).split("-");
+                String[] arr = group.substring(1, group.length() - 1).split("-");
                 int min = Integer.parseInt(arr[0]), max = Integer.parseInt(arr[1]);
                 int random = (int) (min + Math.random() * (max + 1 - min));
                 result = result.replace(group, String.valueOf(random));
