@@ -47,7 +47,8 @@ public class MysqlDataSourceImpl extends AbstractDataSourceImpl {
                     String data = resultSet.getString("data");
                     if (data != null) {
                         FileConfiguration object = new YamlConfiguration();
-                        object.loadFromString(new String(Base64.getDecoder().decode(data.getBytes(StandardCharsets.UTF_8))));
+                        byte[] bytes = Base64.getDecoder().decode(data.getBytes(StandardCharsets.UTF_8));
+                        object.loadFromString(new String(bytes, StandardCharsets.UTF_8));
                         atomicReference.set(object);
                     }
                 }
