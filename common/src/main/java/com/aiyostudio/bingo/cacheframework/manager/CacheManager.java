@@ -16,13 +16,14 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author AiYo Studio
  * @since 1.0.0 - Blank038 - 2023-07-22
  */
 public class CacheManager {
-    private static final Map<UUID, PlayerCache> PLAYER_CACHE_MAP = new HashMap<>();
+    private static final Map<UUID, PlayerCache> PLAYER_CACHE_MAP = new ConcurrentHashMap<>();
     private static final Map<String, QuestCache> QUEST_CACHE_MAP = new HashMap<>();
     private static final Map<String, ViewCache> VIEW_CACHE_MAP = new HashMap<>();
     private static final Map<String, NodeCache> NODE_CACHE_MAP = new HashMap<>();
