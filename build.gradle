@@ -2,7 +2,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '4.0.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 project.ext {
@@ -11,19 +11,20 @@ project.ext {
 
 dependencies {
     implementation project(":common")
-    implementation project(":module:module-pixelmon-legacy")
-    implementation project(":module:module-pixelmon-native")
 }
 
 allprojects {
     apply plugin: 'java'
 
-    archivesBaseName = "Bingo"
+    base {
+        archivesName = "Bingo"
+    }
     version = ""
 
-    sourceCompatibility = targetCompatibility = '1.8'
-    compileJava {
-        sourceCompatibility = targetCompatibility = '1.8'
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(8)
+        }
     }
 
     repositories {
@@ -32,11 +33,12 @@ allprojects {
             name = "AyStudio-Repository"
             url = "https://repo.mc9y.com/snapshots"
         }
+        mavenLocal()
     }
 
     dependencies {
-        compileOnly("org.projectlombok:lombok:1.18.24")
-        annotationProcessor("org.projectlombok:lombok:1.18.24")
+        compileOnly("org.projectlombok:lombok:1.18.30")
+        annotationProcessor("org.projectlombok:lombok:1.18.30")
     }
 
     processResources {
@@ -48,7 +50,7 @@ allprojects {
     }
 
     processResources {
-        setFilteringCharset("UTF-8")
+        filteringCharset = "UTF-8"
     }
 
     tasks.withType(JavaCompile) {
@@ -59,12 +61,10 @@ allprojects {
 subprojects.each { subproject -> evaluationDependsOn(subproject.path) }
 
 tasks.register('allJar', Jar) {
-    dependsOn subprojects.tasks["build"]
-    baseName = 'Bingo-' + project.property("ver")
+    dependsOn subprojects.collect { it.tasks.named("build") }
+    archiveBaseName = 'Bingo-' + project.property("ver")
     subprojects.each { subproject ->
-        from subproject.configurations.archives.allArtifacts.files.collect {
-            zipTree(it)
-        }
+        from subproject.tasks.named("jar").map { zipTree(it.outputs.files.singleFile) }
     }
 }
 

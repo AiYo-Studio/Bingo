@@ -17,7 +17,7 @@ dependencies {
 }
 
 shadowJar {
-    setArchiveName("Bingo.jar")
+    archiveFileName = "Bingo.jar"
 
     relocate 'org.quartz', 'org.bingo.quartz'
     relocate 'org.terracotta', 'org.bingo.terracotta'

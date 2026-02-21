@@ -1,4 +1,5 @@
 rootProject.name = "Bingo"
 
 include 'common'
-include 'module:module-pixelmon-legacy', 'module:module-pixelmon-native'
+// Pixelmon modules temporarily excluded - require ForgeGradle 3.x which is incompatible with Gradle 8.x
+// include 'module:module-pixelmon-legacy', 'module:module-pixelmon-native'
