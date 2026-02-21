@@ -42,6 +42,9 @@ reward-received: "该奖励你已领过."
 gotten-reward: "成功领取奖励."
 
 quest-undone: "你还未完成对应的任务."
+quest-status-progress: "&e进行中"
+quest-status-completed: "&a已完成"
+quest-status-locked: "&c待解锁"
 
 view-locked: "还未解锁该视图所需任务, 无法查看."
 view-condition-denied: "未达成该视图所需条件, 无法查看."

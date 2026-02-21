@@ -4,6 +4,7 @@ import com.aiyostudio.bingo.cacheframework.cache.QuestCache;
 import com.aiyostudio.bingo.cacheframework.cache.ViewCache;
 import com.aiyostudio.bingo.cacheframework.manager.CacheManager;
 import com.aiyostudio.bingo.config.DefaultConfig;
+import com.aiyostudio.bingo.enums.QuestStatus;
 import com.aiyostudio.bingo.handler.format.Formatter;
 import com.aiyostudio.bingo.i18n.I18n;
 import com.aiyostudio.bingo.util.TextUtil;
@@ -67,7 +68,9 @@ public class RandomViewImpl extends DefaultViewImpl {
                     progress = TextUtil.formatHexColor(DefaultConfig.getConfig().getString("progress.complete") + header
                             + DefaultConfig.getConfig().getString("progress.undone") + footer);
 
-            boolean completed = playerCache.isCompleted(questId);
+            QuestStatus questStatus = playerCache.getQuestStatus(questId);
+            boolean completed = questStatus == QuestStatus.COMPLETED;
+            String statusText = this.getQuestStatusText(questStatus);
 
             ItemStack itemStack = new ItemStack(Material.valueOf(config.getString("type")), 1);
             if (completed) {
@@ -87,7 +90,8 @@ public class RandomViewImpl extends DefaultViewImpl {
             }
             itemMeta.setDisplayName(TextUtil.formatHexColor(config.getString("name")
                     .replace("%questName%", questName).replace("%progress%", progress)
-                    .replace("%pct%", String.valueOf(pctInt))));
+                    .replace("%pct%", String.valueOf(pctInt))
+                    .replace("%status%", statusText)));
             List<String> lore = new ArrayList<>();
             for (String line : config.getStringList("lore")) {
                 if (line.contains("%appendLore%")) {
@@ -99,7 +103,8 @@ public class RandomViewImpl extends DefaultViewImpl {
             lore.replaceAll((s) -> TextUtil.formatHexColor(Formatter.format(this.player, s))
                     .replace("%questName%", questName)
                     .replace("%progress%", progress)
-                    .replace("%pct%", String.valueOf(pctInt)));
+                    .replace("%pct%", String.valueOf(pctInt))
+                    .replace("%status%", statusText));
             itemMeta.setLore(lore);
             itemStack.setItemMeta(itemMeta);
 

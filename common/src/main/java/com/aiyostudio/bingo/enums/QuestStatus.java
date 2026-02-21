@@ -6,6 +6,10 @@ package com.aiyostudio.bingo.enums;
  */
 public enum QuestStatus {
     /**
+     * waiting for previous quest to complete
+     */
+    LOCKED,
+    /**
      * in progress
      */
     PROGRESS,

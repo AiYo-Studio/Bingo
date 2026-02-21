@@ -16,6 +16,7 @@ import java.util.Map;
 @Getter
 public class QuestCache {
     private final String questType, questName;
+    private final List<String> requireQuestIds = new ArrayList<>();
     private final int amount;
     private final List<String> appendLore = new ArrayList<>(),
             conditions = new ArrayList<>();
@@ -24,6 +25,19 @@ public class QuestCache {
     public QuestCache(ConfigurationSection section) {
         this.questName = TextUtil.formatHexColor(section.getString("name"));
         this.questType = section.getString("type");
+        if (section.isString("require")) {
+            this.requireQuestIds.add(section.getString("require"));
+        } else if (section.isList("require")) {
+            this.requireQuestIds.addAll(section.getStringList("require"));
+        }
+        // Backward compatibility for older configs.
+        if (this.requireQuestIds.isEmpty()) {
+            String legacy = section.getString("pre-quest",
+                    section.getString("preQuest", section.getString("require-quest")));
+            if (legacy != null && !legacy.isEmpty()) {
+                this.requireQuestIds.add(legacy);
+            }
+        }
         if (section.isString("condition")) {
             this.conditions.add(section.getString("condition"));
         } else if (section.isList("condition")) {

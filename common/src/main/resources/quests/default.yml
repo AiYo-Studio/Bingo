@@ -19,6 +19,9 @@ example2:
 example3:
   name: "挖十个沙子"
   type: "break"
+  require:
+    - "example1"
+    - "example2"
   appendLore: []
   condition: "SAND"
   amount: 10

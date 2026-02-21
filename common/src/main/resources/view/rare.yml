@@ -13,6 +13,7 @@ repeat-quest-item: &questItem
   lore:
     - ""
     - " &f当前进度 %progress% &f(%pct%%) "
+    - " &f当前状态 %status%"
     - ""
 repeat-state-item: &stateItem
   commands:

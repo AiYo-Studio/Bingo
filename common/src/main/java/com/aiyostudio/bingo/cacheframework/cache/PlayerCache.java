@@ -142,11 +142,25 @@ public class PlayerCache {
 
     public boolean isCompleted(String... questId) {
         for (String key : questId) {
-            if (!this.progress.containsKey(key) || this.progress.get(key).getQuestStatus() == QuestStatus.PROGRESS) {
+            if (!this.progress.containsKey(key) || this.progress.get(key).getQuestStatus() != QuestStatus.COMPLETED) {
                 return false;
             }
         }
         return true;
+    }
+
+    public QuestStatus getQuestStatus(String questId) {
+        if (!this.progress.containsKey(questId) || !CacheManager.hasQuest(questId)) {
+            return QuestStatus.LOCKED;
+        }
+        QuestProgressCache questProgressCache = this.progress.get(questId);
+        if (questProgressCache.getQuestStatus() == QuestStatus.COMPLETED) {
+            return QuestStatus.COMPLETED;
+        }
+        if (this.isQuestLockedByPrevious(questId)) {
+            return QuestStatus.LOCKED;
+        }
+        return QuestStatus.PROGRESS;
     }
 
     public boolean isClaimed(String claimKey) {
@@ -172,7 +186,7 @@ public class PlayerCache {
 
     public void addQuestProgress(String questType, String condition, int count) {
         for (Map.Entry<String, QuestProgressCache> entry : this.progress.entrySet()) {
-            if (entry.getValue().questStatus == QuestStatus.COMPLETED) {
+            if (this.getQuestStatus(entry.getKey()) != QuestStatus.PROGRESS) {
                 continue;
             }
             this.addQuestProgress(entry.getKey(), questType, condition, count);
@@ -182,7 +196,7 @@ public class PlayerCache {
     public void addQuestProgress(String questId, String type, String condition, int count) {
         if (this.progress.containsKey(questId) && CacheManager.hasQuest(questId)) {
             QuestProgressCache cache = this.progress.get(questId);
-            if (cache.getQuestStatus() == QuestStatus.PROGRESS) {
+            if (this.getQuestStatus(questId) == QuestStatus.PROGRESS) {
                 cache.addProgress(type, condition, count);
 
                 QuestCache questCache = CacheManager.getQuestCache(questId);
@@ -217,9 +231,24 @@ public class PlayerCache {
 
     public double getQuestProgressPct(String questId) {
         if (this.progress.containsKey(questId) && CacheManager.hasQuest(questId)) {
+            if (this.getQuestStatus(questId) == QuestStatus.LOCKED) {
+                return 0.0;
+            }
             return this.progress.get(questId).getQuestProgressPct(CacheManager.getQuestCache(questId));
         }
         return 0.0;
+    }
+
+    private boolean isQuestLockedByPrevious(String questId) {
+        QuestCache questCache = CacheManager.getQuestCache(questId);
+        if (questCache == null) {
+            return false;
+        }
+        List<String> requireQuestIds = questCache.getRequireQuestIds();
+        if (requireQuestIds.isEmpty()) {
+            return false;
+        }
+        return requireQuestIds.stream().anyMatch((requireQuestId) -> !this.isCompleted(requireQuestId));
     }
 
     public void addQuestClaimed(String qusetId) {
