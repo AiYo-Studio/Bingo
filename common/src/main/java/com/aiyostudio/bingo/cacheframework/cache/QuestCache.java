@@ -18,6 +18,7 @@ public class QuestCache {
     private final String questType, questName;
     private final List<String> requireQuestIds = new ArrayList<>();
     private final int amount;
+    private final boolean single;
     private final List<String> appendLore = new ArrayList<>(),
             conditions = new ArrayList<>();
     private final Map<String, List<String>> commands = new HashMap<>();
@@ -44,6 +45,7 @@ public class QuestCache {
             this.conditions.addAll(section.getStringList("condition"));
         }
         this.amount = section.getInt("amount");
+        this.single = section.getBoolean("single", false);
         this.appendLore.addAll(section.getStringList("appendLore"));
         if (section.contains("commands")) {
             for (String key : section.getConfigurationSection("commands").getKeys(false)) {

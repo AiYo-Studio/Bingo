@@ -185,11 +185,33 @@ public class PlayerCache {
     }
 
     public void addQuestProgress(String questType, String condition, int count) {
+        // 收集所有匹配的任务
+        List<String> matchingQuestIds = new ArrayList<>();
+        boolean hasAnySingle = false;
+
         for (Map.Entry<String, QuestProgressCache> entry : this.progress.entrySet()) {
-            if (this.getQuestStatus(entry.getKey()) != QuestStatus.PROGRESS) {
+            String questId = entry.getKey();
+            if (this.getQuestStatus(questId) != QuestStatus.PROGRESS) {
                 continue;
             }
-            this.addQuestProgress(entry.getKey(), questType, condition, count);
+            QuestCache questCache = CacheManager.getQuestCache(questId);
+            if (questCache != null && questCache.getQuestType().equals(questType)) {
+                matchingQuestIds.add(questId);
+                if (questCache.isSingle()) {
+                    hasAnySingle = true;
+                }
+            }
+        }
+
+        // 根据 single 配置决定增加进度的任务数量
+        if (hasAnySingle && !matchingQuestIds.isEmpty()) {
+            // 只给第一个匹配的任务增加进度
+            this.addQuestProgress(matchingQuestIds.get(0), questType, condition, count);
+        } else {
+            // 保持原有行为：给所有匹配的任务增加进度
+            for (String questId : matchingQuestIds) {
+                this.addQuestProgress(questId, questType, condition, count);
+            }
         }
     }
 
