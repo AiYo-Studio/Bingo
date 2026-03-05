@@ -34,17 +34,42 @@ public class CacheManager {
     private static final CustomExecute<File> QUEST_LOAD_SCRIPT = (file) -> {
         FileConfiguration data = YamlConfiguration.loadConfiguration(file);
         for (String questKey : data.getKeys(false)) {
-            CacheManager.QUEST_CACHE_MAP.put(questKey, new QuestCache(data.getConfigurationSection(questKey)));
+            try {
+                CacheManager.QUEST_CACHE_MAP.put(questKey, new QuestCache(data.getConfigurationSection(questKey)));
+            } catch (Exception e) {
+                Bingo.getInstance().getLogger().severe("加载任务 '" + questKey + "' 失败 (文件: " + file.getName() + "): " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     };
     private static IDataSource dataSource;
 
 
     public static void initialize() throws SchedulerException {
-        CacheManager.loadQuestCache();
-        CacheManager.loadViewCache();
-        CacheManager.loadGroupCache();
-        CacheManager.loadNodeCache();
+        try {
+            CacheManager.loadQuestCache();
+        } catch (Exception e) {
+            Bingo.getInstance().getLogger().severe("加载任务缓存阶段失败: " + e.getMessage());
+            e.printStackTrace();
+        }
+        try {
+            CacheManager.loadViewCache();
+        } catch (Exception e) {
+            Bingo.getInstance().getLogger().severe("加载视图缓存阶段失败: " + e.getMessage());
+            e.printStackTrace();
+        }
+        try {
+            CacheManager.loadGroupCache();
+        } catch (Exception e) {
+            Bingo.getInstance().getLogger().severe("加载任务组缓存阶段失败: " + e.getMessage());
+            e.printStackTrace();
+        }
+        try {
+            CacheManager.loadNodeCache();
+        } catch (Exception e) {
+            Bingo.getInstance().getLogger().severe("加载节点缓存阶段失败: " + e.getMessage());
+            e.printStackTrace();
+        }
         CacheManager.loadJobs();
     }
 
@@ -69,7 +94,9 @@ public class CacheManager {
 
     private static void loadQuestCache(File targetFile) {
         if (targetFile.isDirectory()) {
-            for (File child : targetFile.listFiles()) {
+            File[] files = targetFile.listFiles();
+            if (files == null) return;
+            for (File child : files) {
                 CacheManager.loadQuestCache(child);
             }
         } else {
@@ -90,9 +117,16 @@ public class CacheManager {
                 Bingo.getInstance().saveResource("view/legacy/rare.yml", "view/rare.yml");
             }
         }
-        for (File file : viewFolder.listFiles()) {
-            String name = file.getName().substring(0, file.getName().indexOf(".yml"));
-            CacheManager.VIEW_CACHE_MAP.put(name, new ViewCache(name, YamlConfiguration.loadConfiguration(file)));
+        File[] viewFiles = viewFolder.listFiles();
+        if (viewFiles == null) return;
+        for (File file : viewFiles) {
+            try {
+                String name = file.getName().substring(0, file.getName().indexOf(".yml"));
+                CacheManager.VIEW_CACHE_MAP.put(name, new ViewCache(name, YamlConfiguration.loadConfiguration(file)));
+            } catch (Exception e) {
+                Bingo.getInstance().getLogger().severe("加载视图文件 '" + file.getName() + "' 失败: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
@@ -101,8 +135,13 @@ public class CacheManager {
         Bingo.getInstance().saveResource("node.yml", "node.yml", false, (file) -> {
             FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
             for (String key : configuration.getKeys(false)) {
-                ConfigurationSection section = configuration.getConfigurationSection(key);
-                CacheManager.NODE_CACHE_MAP.put(key, new NodeCache(section.getString("permission")));
+                try {
+                    ConfigurationSection section = configuration.getConfigurationSection(key);
+                    CacheManager.NODE_CACHE_MAP.put(key, new NodeCache(section.getString("permission")));
+                } catch (Exception e) {
+                    Bingo.getInstance().getLogger().severe("加载节点 '" + key + "' 失败: " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -115,12 +154,19 @@ public class CacheManager {
             Bingo.getInstance().saveResource("groups/default.yml", "groups/default.yml");
             Bingo.getInstance().saveResource("groups/rare.yml", "groups/rare.yml");
         }
-        for (File file : groupFolder.listFiles()) {
-            String name = file.getName().substring(0, file.getName().indexOf(".yml"));
-            FileConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-            GroupCache groupCache = new GroupCache(yaml.getStringList("condition"),
-                    yaml.getStringList("unlock"), TextUtil.formatHexColor(yaml.getString("name")));
-            CacheManager.GROUP_CACHE_MAP.put(name, groupCache);
+        File[] groupFiles = groupFolder.listFiles();
+        if (groupFiles == null) return;
+        for (File file : groupFiles) {
+            try {
+                String name = file.getName().substring(0, file.getName().indexOf(".yml"));
+                FileConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+                GroupCache groupCache = new GroupCache(yaml.getStringList("condition"),
+                        yaml.getStringList("unlock"), TextUtil.formatHexColor(yaml.getString("name")));
+                CacheManager.GROUP_CACHE_MAP.put(name, groupCache);
+            } catch (Exception e) {
+                Bingo.getInstance().getLogger().severe("加载任务组文件 '" + file.getName() + "' 失败: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
@@ -133,22 +179,29 @@ public class CacheManager {
             Bingo.getInstance().saveResource("jobs/example.yml", "jobs/example.yml");
         }
 
-        for (File i : jobFolder.listFiles()) {
-            String key = i.getName().substring(0, i.getName().indexOf(".yml"));
-            FileConfiguration data = YamlConfiguration.loadConfiguration(i);
+        File[] jobFiles = jobFolder.listFiles();
+        if (jobFiles == null) return;
+        for (File i : jobFiles) {
+            try {
+                String key = i.getName().substring(0, i.getName().indexOf(".yml"));
+                FileConfiguration data = YamlConfiguration.loadConfiguration(i);
 
-            CacheManager.JOB_CACHE_MAP.put(key, new JobCache(data));
+                CacheManager.JOB_CACHE_MAP.put(key, new JobCache(data));
 
-            // start cron task
-            JobDetail jobDetail = JobBuilder.newJob(CronJob.class)
-                    .withIdentity(key, "bingoJobGroup")
-                    .usingJobData("JobKey", key)
-                    .build();
-            Trigger trigger = TriggerBuilder.newTrigger()
-                    .withIdentity(key + "Trigger", "bingoTriggerGroup")
-                    .withSchedule(CronScheduleBuilder.cronSchedule(data.getString("expression")))
-                    .build();
-           scheduler.scheduleJob(jobDetail, trigger);
+                // start cron task
+                JobDetail jobDetail = JobBuilder.newJob(CronJob.class)
+                        .withIdentity(key, "bingoJobGroup")
+                        .usingJobData("JobKey", key)
+                        .build();
+                Trigger trigger = TriggerBuilder.newTrigger()
+                        .withIdentity(key + "Trigger", "bingoTriggerGroup")
+                        .withSchedule(CronScheduleBuilder.cronSchedule(data.getString("expression")))
+                        .build();
+                scheduler.scheduleJob(jobDetail, trigger);
+            } catch (Exception e) {
+                Bingo.getInstance().getLogger().severe("加载 Job 文件 '" + i.getName() + "' 失败: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
 
         if (!scheduler.isStarted()) {

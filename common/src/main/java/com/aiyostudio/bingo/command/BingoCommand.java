@@ -85,9 +85,15 @@ public class BingoCommand implements CommandExecutor {
 
     private void reload(CommandSender sender) {
         if (sender.hasPermission("bingo.admin")) {
-            this.plugin.loadConfig();
-            CacheManager.getAllPlayerCaches().forEach((k, v) -> v.checkUnlockGroups());
-            sender.sendMessage(I18n.getStrAndHeader("reload"));
+            try {
+                this.plugin.loadConfig();
+                CacheManager.getAllPlayerCaches().forEach((k, v) -> v.checkUnlockGroups());
+                sender.sendMessage(I18n.getStrAndHeader("reload"));
+            } catch (Exception e) {
+                sender.sendMessage("§c重载配置时发生错误，请查看后台日志。");
+                Bingo.getInstance().getLogger().severe("重载配置失败: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 

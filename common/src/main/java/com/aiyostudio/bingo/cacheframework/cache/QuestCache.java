@@ -48,8 +48,11 @@ public class QuestCache {
         this.single = section.getBoolean("single", false);
         this.appendLore.addAll(section.getStringList("appendLore"));
         if (section.contains("commands")) {
-            for (String key : section.getConfigurationSection("commands").getKeys(false)) {
-                this.commands.put(key, section.getStringList("commands." + key));
+            ConfigurationSection cmdSection = section.getConfigurationSection("commands");
+            if (cmdSection != null) {
+                for (String key : cmdSection.getKeys(false)) {
+                    this.commands.put(key, section.getStringList("commands." + key));
+                }
             }
         }
     }
