@@ -205,8 +205,16 @@ public class PlayerCache {
 
         // 根据 single 配置决定增加进度的任务数量
         if (hasAnySingle && !matchingQuestIds.isEmpty()) {
-            // 只给第一个匹配的任务增加进度
-            this.addQuestProgress(matchingQuestIds.get(0), questType, condition, count);
+            // 遍历所有匹配任务，找到第一个 condition 匹配的任务并增加进度
+            for (String questId : matchingQuestIds) {
+                QuestCache questCache = CacheManager.getQuestCache(questId);
+                if (questCache != null && questCache.getConditions().stream().anyMatch(
+                        c -> "*".equals(condition) || condition.equals(c)
+                                || "*".equals(c) || condition.matches(c))) {
+                    this.addQuestProgress(questId, questType, condition, count);
+                    break;
+                }
+            }
         } else {
             // 保持原有行为：给所有匹配的任务增加进度
             for (String questId : matchingQuestIds) {
