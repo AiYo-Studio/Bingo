@@ -187,7 +187,6 @@ public class PlayerCache {
     public void addQuestProgress(String questType, String condition, int count) {
         // 收集所有匹配的任务
         List<String> matchingQuestIds = new ArrayList<>();
-        boolean hasAnySingle = false;
 
         for (Map.Entry<String, QuestProgressCache> entry : this.progress.entrySet()) {
             String questId = entry.getKey();
@@ -197,29 +196,45 @@ public class PlayerCache {
             QuestCache questCache = CacheManager.getQuestCache(questId);
             if (questCache != null && questCache.getQuestType().equals(questType)) {
                 matchingQuestIds.add(questId);
-                if (questCache.isSingle()) {
-                    hasAnySingle = true;
-                }
             }
         }
 
-        // 根据 single 配置决定增加进度的任务数量
-        if (hasAnySingle && !matchingQuestIds.isEmpty()) {
-            // 遍历所有匹配任务，找到第一个 condition 匹配的任务并增加进度
-            for (String questId : matchingQuestIds) {
-                QuestCache questCache = CacheManager.getQuestCache(questId);
-                if (questCache != null && questCache.getConditions().stream().anyMatch(
-                        c -> "*".equals(condition) || condition.equals(c)
-                                || "*".equals(c) || condition.matches(c))) {
-                    this.addQuestProgress(questId, questType, condition, count);
-                    break;
-                }
+        // single 任务间互斥：同类型 single 任务只有一个获得进度
+        // 优先级：精确条件匹配 > 通配符(*/all)匹配
+        // 非 single 任务不受影响，全部正常增加进度
+        String singleExactMatch = null;
+        String singleWildcardMatch = null;
+        for (String questId : matchingQuestIds) {
+            QuestCache questCache = CacheManager.getQuestCache(questId);
+            if (questCache == null) {
+                continue;
             }
-        } else {
-            // 保持原有行为：给所有匹配的任务增加进度
-            for (String questId : matchingQuestIds) {
+            if (questCache.isSingle()) {
+                if (singleExactMatch == null || singleWildcardMatch == null) {
+                    for (String c : questCache.getConditions()) {
+                        if (condition.equals(c) || condition.matches(c)) {
+                            // 精确匹配（含正则）
+                            if (singleExactMatch == null) {
+                                singleExactMatch = questId;
+                            }
+                            break;
+                        } else if ("*".equals(c) || "all".equalsIgnoreCase(c)) {
+                            // 通配符匹配
+                            if (singleWildcardMatch == null) {
+                                singleWildcardMatch = questId;
+                            }
+                            break;
+                        }
+                    }
+                }
+            } else {
                 this.addQuestProgress(questId, questType, condition, count);
             }
+        }
+        // 精确匹配优先，无精确匹配时回退通配符
+        String singleTarget = singleExactMatch != null ? singleExactMatch : singleWildcardMatch;
+        if (singleTarget != null) {
+            this.addQuestProgress(singleTarget, questType, condition, count);
         }
     }
 
@@ -334,15 +349,17 @@ public class PlayerCache {
             if (questCache == null) {
                 return;
             }
-            questCache.getConditions().forEach((v) -> {
+            // 添加缺失的条目，保留已有进度
+            Set<String> expectedKeys = new HashSet<>();
+            for (String v : questCache.getConditions()) {
                 String progressKey = questCache.getQuestType() + "-" + v;
-                if (this.progressEntryMap.isEmpty() || !this.progressEntryMap.containsKey(progressKey)) {
-                    this.progressEntryMap.clear();
-
-                    ProgressEntry progressEntry = new ProgressEntry(questCache.getQuestType(), v, 0);
-                    this.progressEntryMap.put(progressKey, progressEntry);
+                expectedKeys.add(progressKey);
+                if (!this.progressEntryMap.containsKey(progressKey)) {
+                    this.progressEntryMap.put(progressKey, new ProgressEntry(questCache.getQuestType(), v, 0));
                 }
-            });
+            }
+            // 移除不再属于当前任务定义的旧条目
+            this.progressEntryMap.keySet().removeIf(k -> !expectedKeys.contains(k));
         }
 
         public void addProgress(String type, String condition, int count) {
