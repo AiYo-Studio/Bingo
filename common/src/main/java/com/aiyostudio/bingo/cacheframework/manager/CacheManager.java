@@ -38,7 +38,7 @@ public class CacheManager {
                 CacheManager.QUEST_CACHE_MAP.put(questKey, new QuestCache(data.getConfigurationSection(questKey)));
             } catch (Exception e) {
                 Bingo.getInstance().getLogger().severe("加载任务 '" + questKey + "' 失败 (文件: " + file.getName() + "): " + e.getMessage());
-                e.printStackTrace();
+
             }
         }
     };
@@ -125,7 +125,7 @@ public class CacheManager {
                 CacheManager.VIEW_CACHE_MAP.put(name, new ViewCache(name, YamlConfiguration.loadConfiguration(file)));
             } catch (Exception e) {
                 Bingo.getInstance().getLogger().severe("加载视图文件 '" + file.getName() + "' 失败: " + e.getMessage());
-                e.printStackTrace();
+
             }
         }
     }
@@ -140,7 +140,7 @@ public class CacheManager {
                     CacheManager.NODE_CACHE_MAP.put(key, new NodeCache(section.getString("permission")));
                 } catch (Exception e) {
                     Bingo.getInstance().getLogger().severe("加载节点 '" + key + "' 失败: " + e.getMessage());
-                    e.printStackTrace();
+    
                 }
             }
         });
@@ -165,7 +165,7 @@ public class CacheManager {
                 CacheManager.GROUP_CACHE_MAP.put(name, groupCache);
             } catch (Exception e) {
                 Bingo.getInstance().getLogger().severe("加载任务组文件 '" + file.getName() + "' 失败: " + e.getMessage());
-                e.printStackTrace();
+
             }
         }
     }
@@ -200,7 +200,7 @@ public class CacheManager {
                 scheduler.scheduleJob(jobDetail, trigger);
             } catch (Exception e) {
                 Bingo.getInstance().getLogger().severe("加载 Job 文件 '" + i.getName() + "' 失败: " + e.getMessage());
-                e.printStackTrace();
+
             }
         }
 
